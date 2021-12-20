@@ -120,11 +120,10 @@ class SitesProvider with ChangeNotifier {
     if (_images[attachmentLinkAsXXint] != null) {
       return _images[attachmentLinkAsXXint]!;
     }
-    source.pullIPFScid(ipfsCid, attachmentLinkAsXXint).then((value) {
-      if (value.isEmpty) return;
-      final bia = MemoryImage(value);
-      _images[attachmentLinkAsXXint] = bia;
-      smoothNotifyListeners();
+    source.pullIPFScid(ipfsCid, attachmentLinkAsXXint).then((value) async {
+      if (value.isNotEmpty) {
+        _images[attachmentLinkAsXXint] = MemoryImage(value);
+      }
     });
 
     if (bHash.isNotEmpty) {

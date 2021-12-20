@@ -20,7 +20,7 @@ Card MultiSiteMultipleEntryCard(
   Image? cardImage;
   var supportingText =
       'Beautiful home to rent, recently refurbished with modern appliances...';
-  if (m.flags.attachements) {
+  if (m.flags.attachements && m.ipfsCid.isNotEmpty) {
     return Card(
         elevation: 4.0,
         child: Column(
