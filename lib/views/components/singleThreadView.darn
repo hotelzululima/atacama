@@ -1,0 +1,46 @@
+import '../../moderatorCore.dart';
+import 'viewHelpers.dart';
+
+String singleThreadView(
+    ModeratorEntrySet mes, ModeratorViewSettings flags, MODERATOR_LOC molo) {
+  if (mes.root == null) {
+    print('singleThreadViews entryset root is not set,PANIC');
+    return '';
+  }
+
+  Set<ModeratorEntry> ch = mes.childrenOf(mes.root!.keyHint);
+
+  var s = '<section class="men ' + flags.rootPage + '">';
+  var a = '';
+
+  a += '<article id="' + mes.root!.shortLink + '"><dl><dt>';
+  a += articlePostHelperHTML(
+      mes.root!,
+      flags.parseLinks,
+      false,
+      ch.length,
+      '',
+      !mes.mentioning(mes.root!.nick).isEmpty,
+      !mes.authors(mes.root!.nick).isEmpty,
+      true);
+  a += '</dt>';
+  String pp = '';
+  ch.forEach((element) {
+    //print(element.hint);
+    if (!element.flags.isReply) return;
+
+    a += '<dd>' +
+        articleReplyHelperHTML(element, mes.root!, flags.parseLinks, false) +
+        '</dd>';
+    pp = element.shortLink;
+  });
+  if (flags.allowComment) {
+    a += '<dd>' +
+        articleReplyBoxHelperHTML(
+            mes.root!, flags, molo, flags.nick, pp, false) +
+        '</dd>';
+  }
+  a += '<dl></article>';
+
+  return s + a + '</section>';
+}

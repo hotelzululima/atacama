@@ -1,0 +1,161 @@
+import '../../thicket/core/ThicketCore.dart';
+import '../../ThicketWebServer.dart';
+import '../core.dart';
+
+//import 'package:es_compression/brotli.dart';
+
+String imageThreadsPreview(ThicketThreads te, ThicketCookie? cookie,
+    ThicketGraph myGraph, ModeratorViewSettings flags, Function envelope) {
+  UserDataBox? _me = myGraph.find(cookie?.user?.identity?.publicKey);
+
+  //final codec = BrotliCodec(level: 0);
+  int tabIndex = 1;
+  String _loner = '';
+  ThicketEntry? lates;
+
+  var s = '<section class="itp itp' + flags.rootPage + '">';
+  Set<String> dupContent = {}; //NASTY
+  te.threads.forEach((key, value) {
+    final _con = value.all.all.map((e) => e.entryHash.hint).toSet();
+    final _l = value.all.allPostsAndReplies
+        .map((e) => Tentry.FromThicketEntry(
+            e, _con, myGraph.find(e.author), null, false))
+        .toList();
+    if (_l.isEmpty) return;
+
+    if (flags.itemLimit != null) {
+      if (tabIndex > flags.itemLimit) return;
+    }
+    if (lates == null) {
+      lates = value.latest;
+    } else {
+      if (value.latest > lates) lates = value.latest;
+    }
+
+    s += '<article id="' +
+        value.root.entryHash.base58 +
+        ' " tabindex="' +
+        tabIndex.toString() +
+        '">';
+    int co = 0;
+    var element = _l.first;
+    if (element == null) {
+      return;
+    }
+    //nasty hack to cull duplicate posts, should not happen
+    if (dupContent.contains(element.body)) return;
+    dupContent.add(element.body);
+    if (flags.showOnlyRoot) {
+      if (co > 0) {
+        return;
+      }
+      //display widget that shows number of replies
+
+    }
+    co++;
+    if (flags.authorHead) {
+      s += '<div class="unb_">';
+      s += ModeratorUserWidget(
+          element.author, element.nick, element.avatar, ' said:', false);
+      if (element.isRoot) {
+        s += '<span> 🌱 </span>';
+      }
+      if (element.pawMatch) {
+        s += '<span> 🐾 </span>';
+      }
+      if (cookie?.user != null) {
+        if (cookie!.user!.following
+            .contains(YAMFhash.fromBase58(element.author))) {
+          s += '[following] ';
+        }
+      }
+      s += '</div>';
+    }
+
+    String blzz = element.backLink != null ? element.backLink : '[BROKEN_BL]';
+
+    s += '<div id="' + element.link + '">' + element.body + '</a></div>';
+
+    if (flags.debugInfo) {
+      s +=
+          '<div class="dbg"><b>#' + element.link + ' bl#' + blzz + '</b></div>';
+    }
+    s += '</div>';
+
+    if (flags.allowComment) {
+      ThicketEntries passingTangle = ThicketEntries();
+      if (_me?.about != null) {
+        passingTangle.add(_me!.about!);
+      }
+      passingTangle.add(value.root);
+      if (value.latestReply != null) {
+        passingTangle.add(value.latestReply!);
+      }
+
+      //String pasData = base64Encode(codec.encode(passingTangle.binary.binary));
+      String pasData = base64Encode(envelope(passingTangle.binary.binary));
+
+      String preButton;
+      if (value.replies.isEmpty) {
+        preButton = 'Comment';
+      } else {
+        preButton = value.replies.length.toString() + ' comments';
+      }
+
+      s += '<form action="/thread/' +
+          value.root.entryHash.base58 +
+          '" method="post" id="t' +
+          tabIndex.toString() +
+          '">';
+      s += '<button tabindex="' +
+          tabIndex.toString() +
+          '" type="submit" name="tangle" value="' +
+          pasData +
+          '" class="btn-link">' +
+          preButton +
+          '</button></form>';
+    }
+    /*s += '<input type="hidden" id="it' +
+        value.root.entryHash.base58 +
+        '" name="t' +
+        value.root.entryHash.base58 +
+        '" value="';
+    s += base64Encode(dlumPencoded) + '"></form>';*/
+    tabIndex++;
+    s += '</article>';
+  });
+  s += '</section>';
+
+  if (flags.createThreadBox) {
+    if (cookie?.user?.role != null) {
+      if (cookie!.user!.role == 1) {
+        Set<ThicketEntry> passingTangle = {};
+        if (_me?.about != null) {
+          passingTangle.add(_me!.about!);
+        }
+        te.tangle.forEach((element) {
+          passingTangle.add(element);
+        });
+        final lumPencoded = ThicketData.fromSet(passingTangle, 8118);
+
+        s +=
+            '<section class="men"><article class="ame"><div id="postBox" class="replyBox">';
+        s += '<form action="' + flags.rootPage + '" method="POST">';
+        s += '<label for="post">new thread:</label><br>';
+        s +=
+            '<input type="hidden" id="perceivedprevious" name="perceivedprevious" value="' +
+                lates!.entryHash.base58 +
+                '">';
+        s += '<input type="hidden" id="tangle" name="tangle" value="' +
+            base64Encode(lumPencoded.binary) +
+            '">';
+        s += '<textarea name="post" rows="5" maxlength="1024">';
+
+        s += '</textarea><button type="submit" >comment</button></form>';
+        s += '</div></article></section>';
+      }
+    }
+  }
+
+  return s;
+}

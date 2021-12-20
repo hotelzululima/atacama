@@ -1,0 +1,376 @@
+import '../../thicket/core/ThicketCore.dart';
+import '../../ThicketWebServer.dart';
+import '../core.dart';
+
+String premiumPage(
+    ThicketThreads? te,
+    ModeratorMe? me,
+    ThicketGraph myGraph,
+    ModeratorViewSettings flags,
+    Set<ThicketEntry> abouts,
+    Function envelope,
+    String cheader,
+    int inBytes,
+    int outBytes,
+    Map<int, Uint8List> shortLinks) {
+  //Set<int>
+  final molo = MODERATOR_LOC();
+  if (te == null) {
+    return '<section class="alert ' +
+        flags.rootPage +
+        'alert">' +
+        molo.threadsNotAvailable +
+        '</section>';
+  }
+  if (te.isEmpty) {
+    return '<section class="alert ' +
+        flags.rootPage +
+        'alert">' +
+        molo.threadsNotAvailable +
+        '</section>';
+  }
+  Map<int, ThicketEntry> _ab = {};
+  abouts.forEach((element) {
+    if (_ab[element.author.hint] == null) {
+      _ab[element.author.hint] = element;
+    } else {
+      if (element > _ab[element.author.hint]!) {
+        _ab[element.author.hint] = element;
+      }
+    }
+  });
+
+  Map<int, List<int>> myLikes = {};
+  bool moderate = false;
+  final ThicketData roots = te.roots;
+  if (me != null) {
+    te.allEntries.all.where((element) => element.isVote).forEach((element) {
+      if (element.flags.hiddenBacklink) {
+        roots.all.forEach((r1) {
+          if (element.backLinkSet.contains(r1.entryHash)) {
+            if (r1.hiddenBacklink(element.backLinkSet) == element.backLink) {
+              if (myLikes[r1.entryHash.hint] == null) {
+                myLikes[r1.entryHash.hint] = [];
+              }
+              myLikes[r1.entryHash.hint]!.add(element.entryHash.hint);
+            }
+          }
+        });
+      } else {
+        if (myLikes[element.backLink] == null) {
+          myLikes[element.backLink.hint] = [];
+        }
+        myLikes[element.backLink.hint]!.add(element.entryHash.hint);
+      }
+    });
+
+    if (me.role == 1) {
+      moderate = true;
+    }
+  }
+
+  var s = '';
+  if (flags.showHeader) {
+    //show page specific header
+    s += '<section class="ched ched' +
+        flags.rootPage +
+        '">' +
+        cheader +
+        '</section>';
+  }
+  //UserDataBox _me = myGraph.find(cookie?.user?.identity?.publicKey);
+  if (flags.createThreadBox && moderate) {
+    Set<ThicketEntry> passingTangle = {};
+    if (me!.about != null) passingTangle.add(me.about!);
+
+    te.tangle.forEach((element) {
+      passingTangle.add(element);
+    });
+    final lumPencoded = ThicketData.fromSet(passingTangle, 256000);
+    final Uint8List crunk = envelope(lumPencoded.binary);
+    String na = molo.defaultVisitorNick;
+    String av = molo.defaultVisitorAvatar;
+
+    //final Uint8List lr = envelope(te.latest.binary);
+
+    if (me != null) {
+      if (_ab[me.identity.publicKey.hint] != null) {
+        ThicketAbout tabo = ThicketAbout.fromBinary(
+            _ab[me.identity.publicKey.hint]!.payloadContainerObject);
+        na = tabo.nick;
+        av = tabo.avatar;
+      }
+    }
+
+    s +=
+        '<section class="men"><article class="ame"><div id="postBox" class="replyBox">';
+    s += '<form action="/new/' +
+        Uri.encodeQueryComponent(
+            base64UrlEncode(shortLinks[shortLinks.keys.first] as Uint8List)) +
+        '" method="POST" enctype="multipart/form-data">';
+    s += '<label for="post">' + molo.postBoxNewThread + '</label><br>';
+    s += '<span><label for="nick">' + molo.postBoxNick + '</label> :';
+    s += '<input type="text" id="nick" maxlength="12" name="nick" value="' +
+        molo.defaultAuthorNick +
+        '"></span>';
+    s += '<input type="text" id="avatar" name="avatar" value="' +
+        molo.defaultAuthorAvatar +
+        '" maxlength="4"></span>';
+
+    s += '<br>';
+    s +=
+        '<input type="hidden" id="perceivedprevious" name="perceivedprevious" value="' +
+            te.tangle.first.entryHash.base58 +
+            '">';
+    /*s += '<input type="hidden" id="tangle" name="tangle" value="' +
+        base64Encode(crunk) +
+        '">';*/
+    s += '<textarea name="post" rows="5" maxlength="1024">';
+    s += '#' + flags.rootPage;
+    s +=
+        '</textarea><input type="hidden" name="MAX_FILE_SIZE" value="430" /><input type="file" id="myFile" name="filename"/><button type="submit" >' +
+            molo.postBoxStartThread +
+            '</button></form>';
+
+    s += '</div></article></section>';
+  }
+  //final codec = BrotliCodec(level: 0);
+  int tabIndex = 10;
+
+  ThicketEntry? lates;
+
+  s += '<section class="men men' + flags.rootPage + '">';
+
+  //NASTY hack to filter out dups
+  int dd = 0;
+  te.threads.forEach((key, value) {
+    if (value == null) return;
+    if (value.isEmpty) return;
+    if (value.root == null) return;
+
+    if (shortLinks[value.root.entryHash.hint] == null) return;
+    Uint8List env = shortLinks[value.root.entryHash.hint]!;
+
+    if (flags.itemLimit != 0) {
+      if (dd > flags.itemLimit) return;
+      dd++;
+    }
+    Set<String> dupContent = {};
+    String _loner = '';
+    var _con = value.all.map((e) => e.entryHash.hint).toSet();
+    var likes = value.likes;
+    if (lates == null) {
+      lates = value.latest;
+    } else {
+      if (value.latest! > lates) lates = value.latest;
+    }
+
+    Set<int> muted = value.mutedAuthors;
+    if (muted.isNotEmpty && me != null) {
+      muted.remove(me.identity.publicKey.hint);
+    }
+    var _l = value.all
+        .where((element) => element.isPost)
+        .map((e) => ModeratorEntry.FromThicketEntry(
+            e,
+            Uint8List(0),
+            _con,
+            myGraph.find(e.author),
+            _ab[e.author.hint],
+            muted.contains(e.author.hint),
+            molo.defaultVisitorNick,
+            molo.defaultVisitorAvatar,
+            Uint8List(0),
+            molo.ghostMode))
+        .toList();
+    if (_l.isEmpty) return;
+
+    if (muted.contains(value.root.author.hint)) {
+      _loner += 'amuted ';
+    }
+    String pLinkData = Uri.encodeQueryComponent(base64UrlEncode(env));
+
+    //Uint8List env = envelope(value.root.binary);
+    //String pLinkData = Uri.encodeQueryComponent(base64Encode(env));
+
+    s += '<article id="' +
+        pLinkData +
+        ' " tabindex="' +
+        tabIndex.toString() +
+        '" class="ame ' +
+        _loner +
+        '" >';
+    int co = 0;
+    bool rootShown = false;
+    _l.forEach((element) {
+      if (element == null) {
+        return;
+      }
+      if (element.isPost && rootShown) {
+        //dont show additional roots branching from thread
+        return;
+      }
+      if (element.isPost) rootShown = true;
+      if (dupContent.contains(element.body)) return;
+      dupContent.add(element.body);
+
+      if (flags.showOnlyRoot) {
+        if (co > 0) {
+          co++;
+          return;
+        }
+        //display widget that shows number of replies
+
+      }
+
+      if (flags.authorColorHint) {
+        s += '<div style="border-left:6px solid ' + element.colour + '"><div>';
+      } else {
+        s += '<div>';
+      }
+      if (flags.authorHead) {
+        s += '<div class="unb_">';
+        s += ModeratorUserWidget(element.author, element.nick, element.avatar,
+            molo.moderatorUserWidgetSaid, element.muted, element.isAnonymous);
+        if (element.isRoot) {
+          s += '<span> 🌱 </span>';
+        }
+        if (element.pawMatch) {
+          s += '<span> 🐾 </span>';
+        }
+        YAMFhash epis = YAMFhash.fromBase58(element.link);
+        if (myLikes[epis.hint] != null) {
+          s +=
+              '<span>♥️ x ' + myLikes[epis.hint]!.length.toString() + '</span>';
+        }
+
+        s += '</div>';
+      }
+      String blzz = element.backLink != null ? element.backLink : '[BROKEN_BL]';
+      s += '<div ';
+      if (element.muted) s += 'class="amuted"';
+      s += ' id="' + element.shortLink + '">' + element.body + '</div>';
+
+      if (flags.debugInfo) {
+        s += '<div class="dbg"><b>#' +
+            element.link +
+            ' bl#' +
+            blzz +
+            '</b></div>';
+      }
+      s += '</div>';
+    });
+
+    if (flags.allowComment) {
+      ThicketData passingTangle = ThicketData(64000);
+      if (me != null) {
+        if (me.about != null) {
+          passingTangle.add(me.about!);
+        }
+      }
+
+      //passingTangle.add(value.root);
+      value.all.forEach((ellu) {
+        if (ellu.author == me?.identity.publicKey) {
+          passingTangle.add(ellu);
+        }
+      });
+      String pasData = '';
+      if (value.latestReply != null) {
+        passingTangle.add(value.latestReply!);
+      }
+      if (!passingTangle.isEmpty) {
+        var enc = envelope(passingTangle.binary);
+        pasData = base64Encode(enc);
+      }
+
+      String preButton = molo.postBoxComment;
+
+      String likesButton = molo.likeButton;
+
+      /*if (myLikes[value.root.entryHash] == null) {
+        s += '<form action="/like/" method="post" id="t' +
+            tabIndex.toString() +
+            '">';
+        if (pasData.isNotEmpty) {
+          s += '<button tabindex="' +
+              tabIndex.toString() +
+              '" type="submit" name="like" class="btn-link">' +
+              likesButton +
+              '</button></form>';
+        } else {
+          s += '<button tabindex="' +
+              tabIndex.toString() +
+              '" type="submit" class="btn-link">' +
+              likesButton +
+              '</button></form>';
+        }
+        tabIndex++;
+      } else {
+        s += myLikes[value.root.entryHash]!.length.toString() + molo.likeAmount;
+      }*/
+
+      s +=
+          '<form action="/t/" method="post" id="t' + tabIndex.toString() + '">';
+
+      s += '<button tabindex="' +
+          tabIndex.toString() +
+          '" type="submit" class="btn-link com">' +
+          preButton +
+          '</button></form>';
+
+      tabIndex++;
+      s += '<form action="/drop/" method="post" id="dr' +
+          tabIndex.toString() +
+          '">';
+      s += '<button tabindex="' +
+          tabIndex.toString() +
+          '" type="submit" class="btn-link">' +
+          molo.dropButton +
+          '</button>';
+      s +=
+          '<input type="hidden" id="perceivedprevious" name="perceivedprevious" value="' +
+              lates!.entryHash.base58 +
+              '">';
+
+      s += '</form>';
+
+      if (!value.root.flags.groupParent && !value.root.flags.groupMember) {
+        tabIndex++;
+        s += '<form action="/grup/" method="post" id="dr' +
+            tabIndex.toString() +
+            '">';
+        s += '<button tabindex="' +
+            tabIndex.toString() +
+            '" type="submit" class="btn-link">upgrade to group</button>';
+        s +=
+            '<input type="hidden" id="perceivedprevious" name="perceivedprevious" value="' +
+                lates!.entryHash.base58 +
+                '">';
+
+        s += '</form>';
+      }
+      if (value.root.flags.groupParent) {
+        tabIndex++;
+        s += '<form action="/ga/" method="post" id="dr' +
+            tabIndex.toString() +
+            '">';
+        s += '<button tabindex="' +
+            tabIndex.toString() +
+            '" type="submit" class="btn-link">moderate group</button>';
+        s +=
+            '<input type="hidden" id="perceivedprevious" name="perceivedprevious" value="' +
+                lates!.entryHash.base58 +
+                '">';
+
+        s += '</form>';
+      }
+    }
+
+    tabIndex++;
+    s += '</article>';
+  });
+  s += '</section>';
+
+  return s;
+}

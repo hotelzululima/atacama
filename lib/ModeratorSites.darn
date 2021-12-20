@@ -1,0 +1,105 @@
+import 'dart:async';
+
+//import 'package:interzone/world.dart';
+
+class ModeratorSites {
+  //init site from startup list
+  //or join site
+  interzoneDisk? disk;
+  Map<String, world> _sites = {};
+  bool get _dirty {
+    for (var s in _sites.values) {
+      if (s.isDirty) return true;
+    }
+    return false;
+  }
+
+  void unDirty() {
+    for (var s in _sites.values) {
+      s.unDirty();
+    }
+  }
+
+  void init(interzoneDisk _io) {
+    disk = _io;
+    //read site specific things
+  }
+
+  List<String> siteKeys = [];
+  String get homeSite => siteKeys.first;
+  String lastPushedCID = '';
+  int lastPushedCIDByteLength = 0;
+
+  List<world> get allSites => _sites.values.toList();
+  Future<void> initSite(String siteName, String url, String nick) async {
+    await disk!.init(siteName + 'Data', false);
+    final world iz = world();
+    iz.appSplashImage = siteName;
+    await iz.init(siteName, url, nick, disk!);
+    _sites[siteName] = iz;
+    siteKeys.add(siteName);
+  }
+
+  bool refreshViaHTTP() {
+    allSites.forEach((element) {
+      element.refreshViaHTTP();
+    });
+    return true;
+  }
+
+  world? findSite(String site) => _sites[site];
+  world? get findHomeSite => findSite(homeSite);
+
+  ModeratorEntrySet _combinedEntrySetCache = ModeratorEntrySet();
+
+  ModeratorEntrySet get combinedEntrySet {
+    if (!_dirty && _combinedEntrySetCache.all.isNotEmpty) {
+      return _combinedEntrySetCache;
+    }
+    ModeratorEntrySet _es = ModeratorEntrySet();
+    _sites.forEach((key, value) {
+      value.messages.all.forEach((element) {
+        element.siteUrl = key;
+        _es.add(element);
+      });
+    });
+    _combinedEntrySetCache = _es;
+    unDirty();
+    return _combinedEntrySetCache;
+  }
+
+  ModeratorEntrySet? siteEntrySet(String site) {
+    ModeratorEntrySet _es = ModeratorEntrySet();
+    if (_sites[site] == null) return _es;
+    return _sites[site]?.messages;
+  }
+
+  Future<bool> deleteEntry(ModeratorEntry m) async {
+    if (_sites[m.siteUrl] == null) return false;
+    _sites[m.siteUrl]!.deleteEntry(m);
+    return true;
+  }
+
+  Future<bool> muteAuthor(ModeratorEntry m) async {
+    if (_sites[m.siteUrl] == null) return false;
+    _sites[m.siteUrl]!.muteAuthor(m);
+    return true;
+  }
+
+  Future<bool> shareEntry(ModeratorEntry m) async {
+    if (_sites[m.siteUrl] == null) return false;
+
+    String l = _sites[m.siteUrl]!.baseUrl + '/t/' + m.shortLink;
+    /*return await Share.share(l, subject: m.twitterPostContent).then((value) {
+      _sites[m.siteUrl]!.shareEntry(m);
+      return true;
+    });*/
+    return false;
+  }
+
+  Future<bool> likeEntry(ModeratorEntry m) async {
+    if (_sites[m.siteUrl] == null) return false;
+    _sites[m.siteUrl]!.newLike(m.shortLink);
+    return true;
+  }
+}

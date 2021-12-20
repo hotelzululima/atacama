@@ -1,0 +1,6 @@
+import '../../moderatorCore.dart';
+
+String premiumThreadsView(
+    ModeratorEntrySet mes, ModeratorViewSettings flags, MODERATOR_LOC molo) {
+  return '';
+}

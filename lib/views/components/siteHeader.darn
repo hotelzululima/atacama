@@ -1,0 +1,177 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import '../../moderatorCore.dart';
+
+String siteHeader(
+    ModeratorMe? me,
+    Uint8List binMe,
+    Uint8List tangler,
+    bool slim,
+    String? tag,
+    int inBytes,
+    int outBytes,
+    MODERATOR_LOC molo,
+    String backstage,
+    bool getRequest,
+    String twitterCard,
+    String fbCard,
+    String nick) {
+  //UserDataBox me = graph.find(cookie.user.identity.publicKey);
+//<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hack/0.8.1/hack.css">
+
+  //String nick = molo.defaultVisitorNick;
+  String s = '''
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">''';
+
+  s += '<html><head><meta name="description" content="' +
+      molo.htmlDescription +
+      '">';
+  s += '''
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+<link href="/css/''' +
+      molo.siteName +
+      '.css';
+
+  s += '''" rel="stylesheet">''';
+
+  if (molo.ipfsJs.isNotEmpty) {
+    s += '''<script type="text/javascript" src="https://ipfs.io/ipfs/''' +
+        molo.ipfsJs +
+        '''"></script>''';
+  } else {
+    s +=
+        '''<script type="text/javascript" src="/css/moderatorG1.js"></script>''';
+  }
+  if (twitterCard.isNotEmpty) {
+    s += twitterCard;
+    s += fbCard;
+  }
+  s += '<title>' + molo.htmlDescription + '</title>';
+  s += '''</head>
+<body class=" ''';
+  if (tag != null) {
+    s += ' bc' + tag;
+  }
+  if (getRequest) {
+    s += ' GET';
+  }
+  s += '">';
+
+  s += '<section class="hdr' '';
+  if (tag != null) {
+    s += ' hdr' + tag;
+  }
+
+  s += '">';
+  int tint = 1;
+  String navi = '<div>';
+  var nav = molo.navigation;
+  if (backstage.isNotEmpty) {
+    nav = molo.backstageNavigation;
+  }
+  nav.forEach((element) {
+    if (tint < 2) {
+      if (element[1] == ':me') {
+        var s = '<form action="/tg/all" method="POST"><button type="submit">' +
+            molo.mentioningMeNaviButton +
+            ' @' +
+            nick +
+            '🐼</button>';
+
+        s += '<input type="hidden" name="qm" value="' + nick + '" />';
+
+        s += '</form>';
+        navi += s;
+        return;
+      }
+      if (element[1].length < 60) {
+        navi += '<form action="/tg/';
+      } else {
+        navi += '<form action="/g/';
+      }
+
+      navi += element[1] +
+          '" method="post"><button tabindex="' +
+          tint.toString() +
+          '" type="submit" name="splash" class="btn-link">' +
+          element[0] +
+          '</button>';
+      /*if (tangler != null) {
+        navi += '<input type="hidden" id="tangle" name="tangle" value="';
+        navi += base64Encode(tangler) + '">';
+      }*/
+      if (me != null) {
+        //dont care about empty browsers
+        /*if (me.mine != null) {
+          if (me.mine.isEmpty == false || me.role != 0) {
+            navi += '<input type="hidden" id="me" name="me" value="';
+            navi += base64Encode(binMe) + '">';
+          }
+        }*/
+        navi += '<input type="hidden" id="katamari" name="katamari" value="';
+        navi += base64Encode(binMe) + '">';
+      }
+      navi += '</form>';
+      tint++;
+    } else {
+      //navi += '<form action="/tg/'
+      if (element[1].length < 60) {
+        navi += '<form action="/tg/';
+      } else {
+        navi += '<form action="/g/';
+      }
+      navi += element[1] +
+          '" method="post"><button tabindex="' +
+          tint.toString() +
+          '" type="submit" name="' +
+          element[0] +
+          '"  class="btn-link">' +
+          element[0] +
+          '</button></form>';
+    }
+  });
+  navi += '</div>';
+  if (me?.role == 1) {
+    s += '<div><h1>' + molo.siteHeaderText + '</h1></div>';
+
+    s += navi + '</section>';
+    return s;
+  } else {
+    s += '<div><h1>' + molo.siteHeaderText + '</h1></div>';
+    s += navi;
+    return s + '</section>';
+  }
+}
+
+String twitterCard(ModeratorEntry t, MODERATOR_LOC molo, String postTitle) {
+  String summary_large_image = '';
+
+  String s = '<meta name="twitter:card" content="summary_large_image">';
+  s += '<meta name="twitter:site" content="' + molo.siteUrl + '">';
+  s += '<meta name="twitter:creator" content="' + molo.twitterPostHandle + '">';
+  s += '<meta name="twitter:title" content="' + postTitle + '">';
+  s += '<meta name="twitter:description" content="' +
+      t.twitterPostContent +
+      '">';
+  s += '<meta name="twitter:image" content="' + t.twitterAttachmentLink + '">';
+
+  return s;
+}
+
+String fbCard(ModeratorEntry t, MODERATOR_LOC molo, String postTitle) {
+  String s = '<meta property="og:type" content="article">';
+  s += '<meta property="og:url" content="' + molo.siteUrl + '">';
+  //s += '<meta name="twitter:creator" content="' + molo.twitterPostHandle + '">';
+  s += '<meta property="og:title" content="' + postTitle + '">';
+  s +=
+      '<meta property="og:description" content="' + t.twitterPostContent + '">';
+  s += '<meta property="og:image" content="' + t.twitterAttachmentLink + '">';
+
+  return s;
+}

@@ -1,0 +1,158 @@
+import 'dart:convert';
+import 'dart:async';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+
+import '../constant.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:interzone/world.dart';
+import '../actions/messageActions.dart';
+import 'package:interzone/world.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+
+class WorldProvider with ChangeNotifier {
+  world source;
+  StreamSubscription _intentDataStreamSubscription =
+      ReceiveSharingIntent.getMediaStream().listen(
+          (List<SharedMediaFile> value) {
+    print(
+        'worldProvider StreamSubscription _intentDataStreamSubscription received');
+    value.forEach((element) {
+      print(element.type);
+    });
+    //print("Shared:" + (_sharedFiles?.map((f) => f.path)?.join(",") ?? ""));
+    //_sharedFiles = value;
+  }, onError: (err) {
+    print("getIntentDataStream error: $err");
+  });
+  WorldProvider(this.source);
+  /*void getData() async {
+    http.Response response = await http.get(Constants.apiEndpoint);
+    var data = jsonDecode(response.body);
+    _countryList = List<CountryModel>();
+    for (var country in data) {
+      _countryList.add(CountryModel.fromMap(country));
+    }
+    notifyListeners();
+  }
+  */
+  String get appSplashImage => source.appSplashImage;
+  String get baseUrl => source.baseUrl;
+  String get nick => source.currentNick;
+
+  String _lastPushedCID = '';
+  int _lastPushedCIDByteLength = 0;
+  String _lastPushedXXhex = '';
+
+  bool _notifying = false;
+  void smoothNotifyListeners() {
+    if (_notifying) return;
+    _notifying = true;
+    Timer(Duration(milliseconds: 600), () {
+      notifyListeners();
+      _notifying = false;
+    });
+  }
+
+  Future<bool> postWithImage(String text, Uint8List attachement) async {
+    /*var uppad = source
+        .newThread(
+            text, attachement, 'guest', source.messages.all.first.shortLink, 0)
+        .then((value) => notifyListeners());
+    */
+    //if (uppad == null) return false;
+    //world updates, time to update messages as well
+
+    return true;
+  }
+
+  Future<bool> postWithIpfsImage(String text, Uint8List upfile) async {
+    text += ' !&' + _lastPushedCID;
+
+    /*var uppad = source
+        .newThread(text, upfile, 'guest', source.messages.all.first.shortLink,
+            upfile.lengthInBytes)
+        .then((value) => smoothNotifyListeners());
+    */
+    //if (uppad == null) return false;
+    //world updates, time to update messages as well
+
+    return true;
+  }
+
+  void resetPinataIpfs() {
+    _lastPushedCID = '';
+    _lastPushedCIDByteLength = 0;
+    _lastPushedXXhex = '';
+  }
+
+  bool get ipfsImageQueued => _lastPushedCID.isNotEmpty;
+
+  Future<String?> pushToPinataIPFS(Uint8List b) async {
+    source.pushToPinataIPFS(b).then((cid) async {
+      if (cid.isNotEmpty) {
+        _lastPushedCID = cid;
+        _lastPushedCIDByteLength = b.lengthInBytes;
+        //_lastPushedXXhex = await source.xxHashHex(b);
+      }
+    });
+  }
+
+  Future<bool> replyToPost(String text, List<ModeratorEntry> cs) async {
+    //assume first as root, last as pp
+    var uppad =
+        await source.newReply(text, cs.first.shortLink, cs.last.shortLink);
+    if (uppad == null) return false;
+    smoothNotifyListeners();
+    return true;
+  }
+
+  void setUserNickAndImage(String nick, Uint8List attachement) async {
+    var uppad = await source.setUserNickAndImage(nick, attachement);
+    if (uppad == null) return;
+    //world updates, time to update messages as well
+    smoothNotifyListeners();
+  }
+
+  void deleteCountry(int index) {
+    /*if (entriesList.length >= index) {
+      entriesList.removeAt(index);
+    }*/
+    smoothNotifyListeners();
+  }
+
+  void refreshViaHTTP() async {
+    source.scanForCachedAttachements(); //prime atts to pull
+    source.pullForCachedAttachements(); //pull first one
+
+    return await source.refreshViaHTTP().then((value) {
+      smoothNotifyListeners();
+    });
+  }
+
+  bool _refreshThreadViaHTTP = false;
+  Future<List<ModeratorEntry>?> refreshThreadViaHTTP(String shortlink) async {
+    source.scanForCachedAttachements(); //prime atts to pull
+    source.pullForCachedAttachements(); //pull first one
+
+    if (_refreshThreadViaHTTP) return null;
+    if (shortlink.isEmpty) return null;
+    return source.refreshThreadViaHTTP(shortlink).then((value) {
+      _refreshThreadViaHTTP = false;
+      if (value != null) {
+        smoothNotifyListeners();
+        return value;
+      }
+      return null;
+    });
+  }
+
+  void refreshTaggedViaHTTP(String tag) async {
+    if (tag.isEmpty) return;
+    bool rf = await source.refreshTaggedViaHTTP(tag);
+    if (rf) {
+      smoothNotifyListeners();
+    }
+  }
+}

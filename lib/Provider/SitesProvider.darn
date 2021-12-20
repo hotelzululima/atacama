@@ -1,0 +1,410 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'package:blurhash_dart/blurhash_dart.dart';
+import 'package:flutter/foundation.dart';
+
+import 'package:flutter/material.dart';
+
+import 'package:interzone/ModeratorSites.dart';
+import 'package:interzone/world.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:image/image.dart' as img;
+
+class SitesProvider with ChangeNotifier {
+  ModeratorSites source;
+  StreamSubscription _intentDataStreamSubscription =
+      ReceiveSharingIntent.getMediaStream().listen(
+          (List<SharedMediaFile> value) {
+    print(
+        'SitesProvider StreamSubscription _intentDataStreamSubscription received');
+    value.forEach((element) {
+      print(element.type);
+    });
+    //print("Shared:" + (_sharedFiles?.map((f) => f.path)?.join(",") ?? ""));
+    //_sharedFiles = value;
+  }, onError: (err) {
+    print("getIntentDataStream error: $err");
+  });
+  SitesProvider(this.source);
+  dynamic get allSites => source.allSites;
+  /*void getData() async {
+    http.Response response = await http.get(Constants.apiEndpoint);
+    var data = jsonDecode(response.body);
+    _countryList = List<CountryModel>();
+    for (var country in data) {
+      _countryList.add(CountryModel.fromMap(country));
+    }
+    notifyListeners();
+  }
+  */
+  String appSplashImage(String site) {
+    world? w = source.findSite(site);
+    if (w == null) return '';
+    return w.appSplashImage;
+  }
+
+  String baseUrl(String site) {
+    world? w = source.findSite(site);
+    if (w == null) return '';
+    return w.baseUrl;
+  }
+
+  String nick(String site) {
+    if (site.isEmpty) {
+      world? w = source.findHomeSite;
+      if (w == null) return '';
+      return w.currentNick;
+    }
+    world? w = source.findHomeSite;
+    if (w == null) return 'guest';
+    return w.currentNick;
+  }
+
+  String _lastPushedCID = '';
+  int _lastPushedCIDByteLength = 0;
+  String _lastPushedXXhex = '';
+
+  world? find(String site) => source.findSite(site);
+
+  bool _notifying = false;
+  void smoothNotifyListeners() {
+    if (_notifying) return;
+    _notifying = true;
+    Timer(Duration(milliseconds: 600), () {
+      notifyListeners();
+      _notifying = false;
+    });
+  }
+
+  Future<bool> postIntoQueueWithImage(
+      String site, String text, Uint8List attachement) async {
+    if (site.isEmpty) site = source.homeSite;
+
+    world? w = source.findSite(site);
+    if (w == null) return false;
+    w
+        .newThreadToQueue(w.currentNick, text, attachement, '',
+            w.messages.all.first.shortLink, '')
+        .then((value) => notifyListeners());
+    //if (uppad == null) return false;
+    //world updates, time to update messages as well
+
+    return true;
+  }
+
+  Future<bool> postWithImage(
+      String site, String text, Uint8List attachement) async {
+    if (site.isEmpty) site = source.homeSite;
+
+    world? w = source.findSite(site);
+    if (w == null) return false;
+    return w
+        .newThread(w.baseUrl, text, attachement, '',
+            w.messages.all.first.shortLink, '')
+        .then((value) {
+      if (value == null) return false;
+      if (value.isEmpty) return false;
+      notifyListeners();
+      return true;
+    });
+    //if (uppad == null) return false;
+    //world updates, time to update messages as well
+  }
+
+  Future<bool> postWithIpfsImage(
+      String site, String text, Uint8List upfile) async {
+    if (site.isEmpty) {
+      site = source.homeSite;
+    }
+
+    world? w = source.findSite(site);
+    if (w == null) return false;
+    //world will take care of patching CID's t post
+    //text += ' !&' + source.lastPushedCID;
+    w
+        .newThread(w.baseUrl, text, upfile, '', w.messages.all.first.shortLink,
+            source.lastPushedCID)
+        .then((value) => smoothNotifyListeners());
+    //if (uppad == null) return false;
+    //world updates, time to update messages as well
+
+    return true;
+  }
+
+  void resetPinataIpfs() {
+    _lastPushedCID = '';
+    _lastPushedCIDByteLength = 0;
+    _lastPushedXXhex = '';
+  }
+
+  bool get ipfsImageQueued => source.lastPushedCID.isNotEmpty;
+
+  Future<String?> pushToPinataIPFS(String site, Uint8List b) async {
+    if (site.isEmpty) site = source.homeSite;
+    world? w = source.findSite(site);
+    if (w == null) return null;
+    return w.pushToPinataIPFS(b).then((cid) async {
+      if (cid.isNotEmpty) {
+        source.lastPushedCID = cid;
+        source.lastPushedCIDByteLength = b.lengthInBytes;
+        return cid;
+        //_lastPushedXXhex = await source.xxHashHex(b);
+      } else {
+        source.lastPushedCID = '';
+        source.lastPushedCIDByteLength = 0;
+      }
+      return null;
+    });
+  }
+
+  Future<bool> replyToPost(
+      String site, String text, List<ModeratorEntry> cs) async {
+    //assume first as root, last as pp
+    if (site.isEmpty) site = source.homeSite;
+    world? w = source.findSite(site);
+    if (w == null) return false;
+    //return w.newReplyToQueue(text, cs.first.shortLink, cs.last.shortLink);
+
+    w.newReply(text, cs.first.shortLink, cs.last.shortLink).then((uppad) {
+      if (uppad == null) {
+        w.newReplyToQueue(text, cs.first.shortLink, cs.last.shortLink);
+      } else {
+        smoothNotifyListeners();
+      }
+    });
+    return true;
+  }
+
+  void setCommonUserNickAndImage(String _nick, Uint8List attachement) async {
+    source.allSites.forEach((element) {
+      element.setUserNickAndImage(_nick, attachement);
+    });
+    //smoothNotifyListeners();
+  }
+
+  void setUserNickAndImage(
+      String site, String nick, Uint8List attachement) async {
+    world? w;
+    if (site.isEmpty) {
+      w = source.findHomeSite;
+    } else {
+      w = source.findSite(site);
+    }
+
+    if (w == null) return;
+    var uppad = await w.setUserNickAndImage(nick, attachement);
+    if (uppad == null) return;
+    //world updates, time to update messages as well
+    smoothNotifyListeners();
+  }
+
+  void deleteCountry(int index) {
+    /*if (entriesList.length >= index) {
+      entriesList.removeAt(index);
+    }*/
+    smoothNotifyListeners();
+  }
+
+  bool _isRefreshingAll = false;
+  Future<bool> refreshAllViaHTTP() async {
+    if (_isRefreshingAll) return false;
+    _isRefreshingAll = true;
+    for (var w in source.allSites) {
+      if (w == null) continue;
+      await w.refreshViaHTTP().then((value) {
+        w.scanForCachedAttachements(); //prime atts to pull
+        w.pullForCachedAttachements(); //pull first one
+        w.outgoingMessageCacheSend();
+      });
+    }
+    smoothNotifyListeners();
+    _isRefreshingAll = false;
+
+    /*compute((dynamic allSites) {
+      for (var w in allSites) {
+        if (w == null) continue;
+
+        w.refreshViaHTTP().then((value) {
+          w.scanForCachedAttachements(); //prime atts to pull
+          w.pullForCachedAttachements(); //pull first one
+          w.outgoingMessageCacheSend();
+          //smoothNotifyListeners();
+        });
+      }
+    }, source.allSites)
+        .then((value) {
+      _isRefreshingAll = false;
+      smoothNotifyListeners();
+    });*/
+
+    return true;
+  }
+
+  refreshViaHTTP(String site) async {
+    world? w = source.findSite(site);
+    if (w == null) return;
+    w.scanForCachedAttachements(); //prime atts to pull
+    w.pullForCachedAttachements(); //pull first one
+
+    return await w.refreshViaHTTP().then((value) {
+      if (value != null) {
+        w.outgoingMessageCacheSend();
+        if (value.isNotEmpty) {
+          smoothNotifyListeners();
+        }
+      }
+    });
+  }
+
+  bool _refreshThreadViaHTTP = false;
+  Future<ModeratorCapsule?> refreshThreadViaHTTP(
+      String site, String shortlink) async {
+    world? w = source.findSite(site);
+    if (w == null) return null;
+
+    w.scanForCachedAttachements(); //prime atts to pull
+    w.pullForCachedAttachements(); //pull first one
+
+    //if (_refreshThreadViaHTTP) return false;
+    if (shortlink.isEmpty) return null;
+
+    return w.refreshThreadViaHTTP(shortlink).then((value) {
+      if (value != null) {
+        w.outgoingMessageCacheSend();
+        //if (value.isNotEmpty) {
+        smoothNotifyListeners();
+        //}
+      }
+    });
+  }
+
+  void refreshTaggedViaHTTP(String site, String tag) async {
+    if (tag.isEmpty) return;
+    world? w = source.findSite(site);
+    if (w == null) return;
+    bool rf = await w.refreshTaggedViaHTTP(tag);
+    if (rf) {
+      smoothNotifyListeners();
+    }
+  }
+
+  Map<int, MemoryImage> _images = {};
+  Map<String, dynamic> _bhaCache = {};
+  AssetImage pieru = AssetImage('assets/fetchingImagePlaceholder.png');
+  ImageProvider readImageProvider(String site, int attachmentLinkAsXXint,
+      String shortLink, String ipfsCid, String bHash) {
+    if (_images[attachmentLinkAsXXint] != null) {
+      return _images[attachmentLinkAsXXint]!;
+    }
+
+    final s = source.findSite(site);
+    if (s == null) {
+      if (bHash.isNotEmpty) {
+        if (_bhaCache[bHash] != null) return _bhaCache[bHash];
+        final bim = BlurHash.decode(bHash).toImage(35, 20);
+        final bia = Image.memory(Uint8List.fromList(img.encodeJpg(bim)));
+        _bhaCache[bHash] = bia.image;
+        return _bhaCache[bHash];
+      }
+      return AssetImage('assets/fetchingImagePlaceholder.png');
+    }
+    if (ipfsCid.isNotEmpty) {
+      /*
+      s.xxC
+          .pullXX(attachmentLinkAsXXint, shortLink, s.baseUrl)
+          .then((img) async {
+        if (!img.isEmpty) {
+          _images[attachmentLinkAsXXint] = img;
+          smoothNotifyListeners();
+        } else {}
+      });
+    } else {*/
+      s.xxC
+          .pullXXifps(attachmentLinkAsXXint, shortLink, ipfsCid)
+          .then((cidi) async {
+        if (!cidi.isEmpty) {
+          //s.xxC.pushXXbytes(cidi, false);
+          _images[attachmentLinkAsXXint] = MemoryImage(cidi);
+        }
+      });
+    }
+    if (bHash.isNotEmpty) {
+      if (_bhaCache[bHash] != null) return _bhaCache[bHash];
+      final bim = BlurHash.decode(bHash).toImage(35, 35);
+      final bia = Image.memory(Uint8List.fromList(img.encodeJpg(bim)));
+      _bhaCache[bHash] = bia.image;
+      return _bhaCache[bHash];
+    }
+    return pieru;
+  }
+
+  List<ModeratorEntry> get combinedEntrySetAsList {
+    //ModeratorEntrySet _ass = ModeratorEntrySet();
+    return source.combinedEntrySet.all;
+  }
+
+  List<ModeratorEntry> get combinedPostEntrySetAsList =>
+      combinedEntrySetAsList.where((element) => element.flags.isPost).toList();
+
+  String _currentThreadShortLink = '';
+  void set currentThreadShortLink(String s) => _currentThreadShortLink = s;
+  List<ModeratorEntry> get currentThread {
+    return source.combinedEntrySet
+        .threadByShortLink(_currentThreadShortLink)
+        .toList();
+  }
+
+  List<ModeratorEntry> repliesToThread(int keyHint) {
+    List<ModeratorEntry> _l = [];
+
+    source.combinedEntrySet.childrenOf(keyHint).forEach((element) {
+      if (!element.flags.isReply) return;
+      _l.add(element);
+    });
+    return _l;
+  }
+
+  Future<bool> share(ModeratorEntry m) async {
+    if (await source.shareEntry(m)) {
+      smoothNotifyListeners();
+      source.refreshViaHTTP();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> deleteEntry(ModeratorEntry m) async {
+    if (await source.deleteEntry(m)) {
+      source.refreshViaHTTP();
+      smoothNotifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> shareEntry(ModeratorEntry m) async {
+    if (await source.shareEntry(m)) {
+      smoothNotifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> likeEntry(ModeratorEntry m) async {
+    if (await source.likeEntry(m)) {
+      source.refreshViaHTTP();
+      smoothNotifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> muteAuthor(ModeratorEntry m) async {
+    if (await source.muteAuthor(m)) {
+      source.refreshViaHTTP();
+      smoothNotifyListeners();
+      return true;
+    }
+    return false;
+  }
+}

@@ -1,0 +1,139 @@
+import '../../moderatorCore.dart';
+import 'viewHelpers.dart';
+
+String multipleThreadsView(
+    ModeratorEntrySet mes, ModeratorViewSettings flags, MODERATOR_LOC molo) {
+  //show groups first
+  //
+  //then single threads
+
+  String s = '';
+  String pp = ''; //hack to perceived previous
+
+  if (mes.threads.isEmpty) {
+    return '<section class="tbox tboxemp">' +
+        molo.threadsNotAvailable +
+        '</section>';
+  }
+  bool noShow = false;
+
+  String titleBox = '';
+  molo.navigation.forEach((element) {
+    if (element[1] == flags.rootPage) {
+      titleBox = element[2];
+    }
+  });
+  if (titleBox.isNotEmpty) {
+    s += '<section class="tbox"><h1>' + titleBox + '</h1></section>';
+  }
+  //s += '<section class="men ' + flags.rootPage + '">';
+  s += '<main class="men ' + flags.rootPage + '">';
+  var a = '';
+
+  if (flags.queriedAuthor.isNotEmpty) {
+    if (mes.authors(flags.queriedAuthor).isEmpty) {
+      s += '<section class="tbox tboxauth">' +
+          molo.authorContentNotAvailable +
+          flags.queriedAuthor +
+          '</section>';
+      noShow = true;
+    }
+  }
+  if (flags.queriedMentions.isNotEmpty) {
+    if (mes.mentioning(flags.queriedMentions).isEmpty) {
+      s += '<section class="tbox tboxamen">' +
+          molo.mentionAuthorContentNotAvailable +
+          flags.queriedMentions +
+          '</section>';
+      noShow = true;
+    }
+  }
+
+  if (flags.createThreadBox) {
+    s += '<section class="men pbox">';
+    s += articleAddBoxHelperHTML(mes.threads.first, flags, molo, pp);
+    s += '</section>';
+  }
+
+  if (noShow) return s;
+  if (flags.rootPage == 'all') {
+    var tgc = tagCloudHelper(mes.tagsWithPopularity);
+    if (tgc.isNotEmpty) {
+      s += '<section class="tcloud">';
+      s += tgc;
+      s += '</section>';
+    }
+  }
+  Set<int> unskip = {};
+  if (flags.queriedMentions.isNotEmpty) {
+    unskip = mes.mentioning(flags.queriedMentions).map((e) => e.hint).toSet();
+  }
+  if (flags.queriedAuthor.isNotEmpty) {
+    unskip = mes.authors(flags.queriedAuthor).map((e) => e.hint).toSet();
+  }
+
+  Set<String> shownAttachments = {};
+  mes.threads.forEach((thread) {
+    if (unskip.isNotEmpty && !unskip.contains(thread.hint)) return;
+    if (thread.body.isEmpty) return;
+    if (flags.disallowWithNoAttachements) {
+      if (!thread.hasAttachment) return;
+    }
+
+    if (thread.flags.nsfw && !flags.allowNSFW) return;
+    if (thread.bodyFucked) return;
+    if (molo.ignoredTagsOnBoot.isNotEmpty) {
+      //skip bullshitty debuggy tags
+      if (thread.tags.isNotEmpty) {
+        if (molo.ignoredTagsOnBoot.contains(thread.tags.first)) return;
+      }
+    }
+    /*if (thread.hasAttachment) {
+      //dont display dup attachements
+      if (shownAttachments.contains(thread.attachmentLink)) {
+        return;
+      } else {
+        shownAttachments.add(thread.attachmentLink);
+      }
+    }*/
+    Set<ModeratorEntry> ch = {};
+    if (flags.queriedMentions.isNotEmpty) {
+      //looking for mentions, show replies
+      ch = mes.childrenOf(thread.keyHint);
+    }
+
+    a += '<article id="' + thread.shortLink + '"><div>';
+    //a += '<article"><div>';
+
+    a += articlePostHelperHTML(
+        thread,
+        flags.parseLinks,
+        true,
+        ch.length,
+        pp,
+        !mes.mentioning(thread.nick).isEmpty,
+        !mes.authors(thread.nick).isEmpty,
+        true);
+    a += '</div>';
+    if (ch.isNotEmpty) {
+      a += '<div class="comments">';
+      ch.forEach((element) {
+        if (!element.flags.isReply) return;
+        a += '<div>' +
+            articleReplyHelperHTML(element, thread, flags.parseLinks, true) +
+            '</div>';
+        pp = element.shortLink;
+      });
+      a += '</div>';
+    } else {
+      pp = ''; //pp is same as thread rooty booty
+    }
+    if (flags.allowComment) {
+      a += articleReplyBoxHelperHTML(thread, flags, molo, flags.nick, pp, true);
+    }
+    a += '</article>';
+    pp = thread.shortLink; //default to previous looking threddo
+  });
+
+  return s + a + '</main>';
+}
