@@ -30,7 +30,7 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
     final mes = context.watch<MultiSiteModeratorEntrySetProvider>();
     //final xxc = context.watch<xxCacheProvider>();
     final navi = context.watch<BottomNavigationBarProvider>();
-    final allPostsFromAllSites = sites.combinedPostEntrySetAsList;
+    final allPostsFromAllSites = sites.latestThreadsAsList;
     /*final ju = Timer(Duration(milliseconds: 100), () {
       itemScrollController.scrollTo(
           index: navi.currentObservedPostIndex,
@@ -91,7 +91,7 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
                         navi,
                         sites,
                         i,
-                        sites.combinedPostEntrySetAsList[i].siteUrl);
+                        sites.latestThreadsAsList[i].siteUrl);
                   },
                   //itemScrollController: itemScrollController,
                   //itemPositionsListener: itemPositionsListener,

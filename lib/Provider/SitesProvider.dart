@@ -109,8 +109,11 @@ class SitesProvider with ChangeNotifier {
 
   List<ModeratorEntry> get combinedEntrySetAsList =>
       source.combinedEntrySet.all;
-  List<ModeratorEntry> get combinedPostEntrySetAsList =>
+  List<ModeratorEntry> get xcombinedPostEntrySetAsList =>
       combinedEntrySetAsList.where((element) => element.flags.isPost).toList();
+
+  List<ModeratorEntry> get latestThreadsAsList =>
+      source.latestThreadsEntrySet.all;
 
   Map<int, MemoryImage> _images = {};
   Map<String, dynamic> _bhaCache = {};
