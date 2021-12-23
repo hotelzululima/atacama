@@ -91,7 +91,7 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
                         navi,
                         sites,
                         i,
-                        sites.latestThreadsAsList[i].siteUrl);
+                        allPostsFromAllSites[i].siteUrl);
                   },
                   //itemScrollController: itemScrollController,
                   //itemPositionsListener: itemPositionsListener,

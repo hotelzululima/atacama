@@ -43,8 +43,9 @@ ButtonBar MultiSiteButtonBar(ModeratorEntry m, ModeratorViewSettings mflags,
           source.currentThreadShortLink = m.shortLink;
           navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
         },
-        child: Text(articlePostCommentsHelper(
-            m, source.threadByShortLink(m.shortLink))),
+        child: Text(articlePostCommentsHelper(m,
+          source.unreadThreadByShortLink(m.shortLink)
+            ),
       ),
     ],
   );

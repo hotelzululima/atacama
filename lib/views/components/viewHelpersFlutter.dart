@@ -357,5 +357,7 @@ ButtonBar articleAuthorHelper(
 
 String articlePostCommentsHelper(ModeratorEntry p, List<ModeratorEntry> l) {
   if (l.isEmpty) return 'Comment now';
-  return l.length.toString() + ' comments';
+  final r = l.where((element) => element.flags.isReply);
+  if (r.isEmpty) return 'Comment now';
+  return r.length.toString() + ' comments';
 }

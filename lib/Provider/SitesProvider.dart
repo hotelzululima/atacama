@@ -85,7 +85,12 @@ class SitesProvider with ChangeNotifier {
     smoothNotifyListeners();
     return t;
   }
-
+  List<ModeratorEntry> unreadThreadByShortLink List<ModeratorEntry> threadByShortLink(String shortLink) {
+    //filter with read / unread
+    final t = source.unreadThreadByShortLink(shortLink);
+    
+    return t;
+  }
   Future<bool> setNick(String nick, String site) => source.setNick(nick, site);
   Future<bool> get refreshAllViaHTTP {
     final t = source.refreshAllViaHTTP;
