@@ -20,6 +20,11 @@ Card MultiSiteMultipleEntryCard(
   Image? cardImage;
   var supportingText =
       'Beautiful home to rent, recently refurbished with modern appliances...';
+  //we are showing the data, mark it read
+  if (!m.flags.isSeen) {
+    source.markSeen(m.shortLink);
+  }
+
   if (m.flags.attachements && m.ipfsCid.isNotEmpty) {
     return Card(
         elevation: 4.0,

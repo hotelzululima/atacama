@@ -19,6 +19,10 @@ Card MultiSiteSingleThreadCard(
   Image? cardImage;
   var supportingText =
       'Beautiful home to rent, recently refurbished with modern appliances...';
+  //we display this, mark it seen
+  if (!m.flags.isSeen) {
+    source.markSeen(m.shortLink);
+  }
   if (m.flags.attachements) {
     return Card(
         elevation: 4.0,
