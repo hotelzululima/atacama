@@ -56,9 +56,7 @@ class SitesProvider with ChangeNotifier {
   String _currentThreadShortLink = '';
   void set currentThreadShortLink(String s) => _currentThreadShortLink = s;
   List<ModeratorEntry> get currentThread {
-    return source.combinedEntrySet
-        .threadByShortLink(_currentThreadShortLink)
-        .toList();
+    return source.threadByShortLink(_currentThreadShortLink);
   }
 
   Future<bool> Share(String shortLink) {
@@ -85,12 +83,14 @@ class SitesProvider with ChangeNotifier {
     smoothNotifyListeners();
     return t;
   }
-  List<ModeratorEntry> unreadThreadByShortLink List<ModeratorEntry> threadByShortLink(String shortLink) {
+
+  List<ModeratorEntry> unreadThreadByShortLink(String shortLink) {
     //filter with read / unread
     final t = source.unreadThreadByShortLink(shortLink);
-    
+
     return t;
   }
+
   Future<bool> setNick(String nick, String site) => source.setNick(nick, site);
   Future<bool> get refreshAllViaHTTP {
     final t = source.refreshAllViaHTTP;
@@ -112,10 +112,10 @@ class SitesProvider with ChangeNotifier {
     return t;
   }
 
-  List<ModeratorEntry> get combinedEntrySetAsList =>
+  List<ModeratorEntry> get xcombinedEntrySetAsList =>
       source.combinedEntrySet.all;
   List<ModeratorEntry> get xcombinedPostEntrySetAsList =>
-      combinedEntrySetAsList.where((element) => element.flags.isPost).toList();
+      xcombinedEntrySetAsList.where((element) => element.flags.isPost).toList();
 
   List<ModeratorEntry> get latestThreadsAsList =>
       source.latestThreadsEntrySet.all;
@@ -144,4 +144,6 @@ class SitesProvider with ChangeNotifier {
 
     return pieru;
   }
+
+  bool markSeen(String shortLink) => source.markSeenOmni(shortLink);
 }

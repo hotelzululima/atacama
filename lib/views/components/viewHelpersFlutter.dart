@@ -359,5 +359,6 @@ String articlePostCommentsHelper(ModeratorEntry p, List<ModeratorEntry> l) {
   if (l.isEmpty) return 'Comment now';
   final r = l.where((element) => element.flags.isReply);
   if (r.isEmpty) return 'Comment now';
-  return r.length.toString() + ' comments';
+  if (p.flags.isSeen) r.length.toString() + ' comments';
+  return r.length.toString() + ' comments ⭐️';
 }
