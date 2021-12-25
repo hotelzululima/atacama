@@ -28,7 +28,7 @@ ButtonBar MultiSiteButtonBar(ModeratorEntry m, ModeratorViewSettings mflags,
           child: Icon(Icons.headphones)),
       TextButton(
         onPressed: () async {
-          await source.Share(m.shortLink);
+          await source.ShareEntry(m);
 
           //navi.signal(AtacamaAction.viewThread, m.shortLink);
         },

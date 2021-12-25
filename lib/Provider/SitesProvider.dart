@@ -10,6 +10,8 @@ import 'package:interzone/world.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:image/image.dart' as img;
 
+import 'package:share_plus/share_plus.dart';
+
 class SitesProvider with ChangeNotifier {
   ModeratorSites source;
   StreamSubscription _intentDataStreamSubscription =
@@ -59,8 +61,11 @@ class SitesProvider with ChangeNotifier {
     return source.threadByShortLink(_currentThreadShortLink);
   }
 
-  Future<bool> Share(String shortLink) {
-    final t = source.shareEntry(shortLink);
+  Future<bool> ShareEntry(ModeratorEntry m) async {
+    String url = m.siteUrl + '/t' + m.shortLink;
+    await Share.share(url,
+        subject: '@' + source.nick + ' is thinking of you now');
+    final t = source.shareEntry(m.shortLink);
     smoothNotifyListeners();
     return t;
   }
@@ -108,8 +113,10 @@ class SitesProvider with ChangeNotifier {
   Future<bool> postEntry(
       String shortLink, String text, Uint8List attachment) async {
     final t = await source.postEntry(shortLink, text, attachment);
+    if (t == null) return false;
+
     smoothNotifyListeners();
-    return t;
+    return true;
   }
 
   List<ModeratorEntry> get xcombinedEntrySetAsList =>
