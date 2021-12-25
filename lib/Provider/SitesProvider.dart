@@ -62,9 +62,12 @@ class SitesProvider with ChangeNotifier {
   }
 
   Future<bool> ShareEntry(ModeratorEntry m) async {
-    String url = m.siteUrl + '/t' + m.shortLink;
-    await Share.share(url,
-        subject: '@' + source.nick + ' is thinking of you now');
+    final w = source.findSite(m.siteUrl);
+    if (w == null) return false;
+
+    String url = w.baseUrl + '/t/' + m.shortLink;
+    await Share.share(url);
+    //subject: '@' + source.nick + ' is thinking of you now');
     final t = source.shareEntry(m.shortLink);
     smoothNotifyListeners();
     return t;
@@ -103,9 +106,8 @@ class SitesProvider with ChangeNotifier {
     return t;
   }
 
-  Future<List<ModeratorEntry>?> replyEntry(
-      String shortLink, String replyText, String pp) async {
-    final t = source.replyEntry(shortLink, replyText, pp);
+  Future<List<ModeratorEntry>?> replyEntry(String replyText, String pp) async {
+    final t = source.replyEntry(_currentThreadShortLink, replyText, pp);
     smoothNotifyListeners();
     return t;
   }
