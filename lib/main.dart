@@ -34,7 +34,6 @@ void main() async {
   final sites = ModeratorSites();
   sites.init(hid);
   await sites.followSite('omasome', 'https://omasome.fi', 'majorllama');
-  //await sites.followSite('clubchonky', 'https://club.chonky.rocks', 'chonky');
 
   //Directory appDocDir = await getApplicationDocumentsDirectory();
   //db.init(appDocDir.path);
