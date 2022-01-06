@@ -30,7 +30,9 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
     final mes = context.watch<MultiSiteModeratorEntrySetProvider>();
     //final xxc = context.watch<xxCacheProvider>();
     final navi = context.watch<BottomNavigationBarProvider>();
-    final allPostsFromAllSites = sites.latestThreadsAsList;
+    final allPostsFromAllSites = sites.latestThreadsAsList
+        .where((element) => element.flags.isPost)
+        .toList();
     /*final ju = Timer(Duration(milliseconds: 100), () {
       itemScrollController.scrollTo(
           index: navi.currentObservedPostIndex,
