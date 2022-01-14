@@ -34,7 +34,10 @@ void main() async {
   final sites = ModeratorSites();
   sites.init(hid);
   await sites.followSite('omasome', 'https://omasome.fi', 'majorllama');
- 
+
+  sites.setIpfsCredentials('', 'a08a19d476e4261dd2f3',
+      '428481d1a86a82f42222815e038360ef43bdf75d28ce673678b2375fb1025e30', '');
+
   //Directory appDocDir = await getApplicationDocumentsDirectory();
   //db.init(appDocDir.path);
   //db.init(path);
