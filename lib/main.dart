@@ -38,27 +38,6 @@ void main() async {
   sites.setIpfsCredentials('', 'a08a19d476e4261dd2f3',
       '428481d1a86a82f42222815e038360ef43bdf75d28ce673678b2375fb1025e30', '');
 
-  //Directory appDocDir = await getApplicationDocumentsDirectory();
-  //db.init(appDocDir.path);
-  //db.init(path);
-  /*world iz = world();
-  iz.appSplashImage = molo.siteName;
-
-  await iz.init(molo.siteUrl, molo.siteUrl, nick, hid);
-
-  print(iz.nick);
-  iz.primeCurrentViewWithCachedAttachments(iz.messages, 30);
-  iz.scanForCachedAttachements(); //prime atts to pull
-  iz.pullForCachedAttachements(); //pull first one
-  */
-  /*await iz.pullForCachedAttachements(); //pull first one
-  await iz.pullForCachedAttachements(); //pull first one
-  await iz.pullForCachedAttachements(); //pull first one
-  await iz.pullForCachedAttachements(); //pull first one
-  await iz.pullForCachedAttachements(); //pull first one
-  await iz.pullForCachedAttachements(); //pull first one
-  await iz.pullForCachedAttachements(); //pull first one */
-
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => SitesProvider(sites)),
