@@ -67,7 +67,6 @@ class SitesProvider with ChangeNotifier {
 
     String url = w.baseUrl + '/t/' + m.shortLink;
     await Share.share(url);
-    //subject: '@' + source.nick + ' is thinking of you now');
     final t = source.shareEntry(m.shortLink);
     smoothNotifyListeners();
     return t;
@@ -87,9 +86,8 @@ class SitesProvider with ChangeNotifier {
 
   String get nick => source.nick;
   List<ModeratorEntry> threadByShortLink(String shortLink) {
-    final t = source.threadByShortLink(shortLink);
-    smoothNotifyListeners();
-    return t;
+    //source.refreshThread(shortLink);
+    return source.threadByShortLink(shortLink);
   }
 
   List<ModeratorEntry> unreadThreadByShortLink(String shortLink) {

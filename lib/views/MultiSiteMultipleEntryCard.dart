@@ -41,6 +41,7 @@ Card MultiSiteMultipleEntryCard(
                   onTap: () {
                     source.currentThreadShortLink = (m.shortLink);
                     source.threadByShortLink(m.shortLink);
+                    
                     navi.setcurrentObservedPostIndex = parentListIndex;
                     navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
                   },

@@ -152,9 +152,13 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                               if (currentFocus != null) {
                                 currentFocus.unfocus();
                               }
-                              await sites.replyEntry(
-                                  reps, sites.currentThread.last.shortLink);
-
+                              await sites
+                                  .replyEntry(
+                                      reps, sites.currentThread.last.shortLink)
+                                  .then((value) {
+                                if (value == null) return;
+                              });
+                              
                               /*await sites.replyToPost(
                                   currentThread
                                       .where((element) => element.flags.isPost)

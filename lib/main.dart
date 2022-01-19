@@ -18,15 +18,13 @@ void main() async {
 
   final HiveInterface db = Hive;
   await db.initFlutter();
-  //db.init(molo.siteName + 'Data');
   final interzoneDisk hid = interzoneDisk(db);
 
   final sites = ModeratorSites();
   sites.init(hid);
-  await sites.followSite('omasome', 'https://omasome.fi', 'majorllama');
-
-  sites.setIpfsCredentials('', 'a08a19d476e4261dd2f3',
-      '428481d1a86a82f42222815e038360ef43bdf75d28ce673678b2375fb1025e30', '');
+  await sites.followSite('omasome', 'https://moderator.rocks', 'atacomer');
+  sites.setIpfsCredentials('', '717e9f8a57a35e1a2c00',
+      '4af41c9dc4eeab4ea09b63d48a07337d61d0a4f557181e17bd70b23dbe4a1a90', '');
 
   runApp(MultiProvider(
     providers: [
