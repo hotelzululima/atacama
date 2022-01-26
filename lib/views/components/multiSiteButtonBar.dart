@@ -18,14 +18,13 @@ ButtonBar MultiSiteButtonBar(ModeratorEntry m, ModeratorViewSettings mflags,
 
             //navi.signal(AtacamaAction.viewThread, m.shortLink);
           },
-          child: Icon(Icons.delete_forever)),
+          /*child: Icon(Icons.delete_forever)),
       TextButton(
           onPressed: () async {
             await source.MuteAuthor(m.shortLink);
 
-            //navi.signal(AtacamaAction.viewThread, m.shortLink);
-          },
-          child: Icon(Icons.headphones)),
+          },*/
+          child: Icon(Icons.delete)),
       TextButton(
         onPressed: () async {
           await source.ShareEntry(m);

@@ -85,6 +85,7 @@ class SitesProvider with ChangeNotifier {
   }
 
   String get nick => source.nick;
+  String get avatar => source.avatar;
   List<ModeratorEntry> threadByShortLink(String shortLink) {
     //source.refreshThread(shortLink);
     return source.threadByShortLink(shortLink);
@@ -97,17 +98,43 @@ class SitesProvider with ChangeNotifier {
     return t;
   }
 
-  Future<bool> setNick(String nick, String site) => source.setNick(nick, site);
+  Future<bool> setNickAvatar(String nick, String avatar, String site) =>
+      source.setNickAvatar(nick, avatar, site);
   Future<bool> get refreshAllViaHTTP {
     final t = source.refreshAllViaHTTP;
     smoothNotifyListeners();
     return t;
   }
 
+  Future<List<ModeratorEntry>?> refreshThreadViaHTTP(String shortLink) async {
+    //source.refreshThread(shortLink);
+    return await source.refreshThread(shortLink).then((data) {
+      if (data != null && data.isNotEmpty) smoothNotifyListeners();
+      return data;
+    });
+  }
+
+  Future<List<ModeratorEntry>?> refreshTaggedViaHTTP(String shortLink) async {
+    final t = source.refreshTagged(shortLink).then((data) {
+      if (data != null && data.isNotEmpty) smoothNotifyListeners();
+      return data;
+    });
+  }
+
+  Future<List<ModeratorEntry>?> refreshAuthorViaHTTP(String shortLink) async {
+    return source.refreshAuthor(shortLink).then((data) {
+      if (data != null && data.isNotEmpty) smoothNotifyListeners();
+      return data;
+    });
+  }
+
   Future<List<ModeratorEntry>?> replyEntry(String replyText, String pp) async {
-    final t = source.replyEntry(_currentThreadShortLink, replyText, pp);
-    smoothNotifyListeners();
-    return t;
+    return source
+        .replyEntry(_currentThreadShortLink, replyText, pp)
+        .then((data) {
+      if (data != null && data.isNotEmpty) smoothNotifyListeners();
+      return data;
+    });
   }
 
   Future<bool> postEntry(
@@ -138,6 +165,7 @@ class SitesProvider with ChangeNotifier {
     source.pullIPFScid(ipfsCid, attachmentLinkAsXXint).then((value) async {
       if (value.isNotEmpty) {
         _images[attachmentLinkAsXXint] = MemoryImage(value);
+        smoothNotifyListeners();
       }
     });
 

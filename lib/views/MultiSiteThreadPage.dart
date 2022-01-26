@@ -158,7 +158,7 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                                   .then((value) {
                                 if (value == null) return;
                               });
-                              
+
                               /*await sites.replyToPost(
                                   currentThread
                                       .where((element) => element.flags.isPost)
@@ -210,6 +210,7 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
             child: FloatingActionButton(
               onPressed: () {
                 //navi.signal(AtacamaAction.initPost, '');
+                sites.markSeen(currentThread.first.shortLink);
                 navi.closeMultiSiteThreadPage();
                 /*final ImagePicker _picker = ImagePicker();
           // Pick an image

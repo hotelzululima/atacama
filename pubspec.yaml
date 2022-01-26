@@ -1,4 +1,4 @@
-name: com.atacama.omasome
+name: hoodownrdevelopment.atacama
 description: atacama client for moderator 
 
 # The following line prevents the package from being accidentally published to
@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # keep last digit in sync with latest interzone
-version: 0.0.8
+version: 0.0.9
 
 environment:
   sdk: ">=2.14.2 <3.0.0"
@@ -41,7 +41,7 @@ dependencies:
   share_plus: ^3.0.4
   scrollable_positioned_list: ^0.2.3
   blurhash_dart: ^1.1.0
-
+  carousel_slider: ^4.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

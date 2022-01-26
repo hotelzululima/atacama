@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
@@ -6,7 +7,9 @@ import '../navigation/NavWrapper.dart';
 import 'package:provider/provider.dart';
 import '../Provider/SitesProvider.dart';
 
+import 'components/viewHelpersFlutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class AtacamaProfilePage extends StatefulWidget {
   @override
@@ -22,7 +25,12 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
     final _focusNodeQuantity = FocusNode();
     final size = MediaQuery.of(context).size;
     final myTextEditingController = TextEditingController(text: sites.nick);
+    final myAvatarTextEditingController =
+        TextEditingController(text: sites.avatar);
+
     final ImagePicker _picker = ImagePicker();
+    final avvy = avatarCarouselSlider(sites.avatar);
+    String _avatar = sites.avatar;
     XFile? _pickedFile;
 
     return Scaffold(
@@ -53,12 +61,36 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
               child: ListView(
                 children: [
                   SizedBox(
-                    height: size.height / 1.6,
-                    child: Ink.image(
-                      image: AssetImage('assets/moderatorSplash.jpeg'),
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
+                      height: size.height / 3.6,
+                      /*child: CircleAvatar(
+                        backgroundColor: Colors.grey[100],
+                        radius: 5,
+                        child: Text(
+                          sites.avatar,
+                          style: TextStyle(fontSize: 52, color: Colors.white),
+                        )),*/
+                      child: CarouselSlider(
+                        options: CarouselOptions(
+                          height: 400.0,
+                          onPageChanged: (index, reason) {
+                            //set avatarus
+                            _avatar = avatarAvailableList(sites.avatar)[index];
+                          },
+                        ),
+                        items: avvy.map((i) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                  decoration:
+                                      BoxDecoration(color: Colors.amber),
+                                  child: i);
+                            },
+                          );
+                        }).toList(),
+                      )),
+                  Text('swipe to change your avatar'),
                   TextFormField(
                     controller: myTextEditingController,
                     maxLength: 10,
@@ -86,7 +118,8 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
                         upfile = await _pickedFile.readAsBytes();
                       }
                       if (myTextEditingController.text.isNotEmpty) {
-                        sites.setNick(myTextEditingController.text, '');
+                        sites.setNickAvatar(
+                            myTextEditingController.text, _avatar, '');
                       }
                       //todo clean this page
                       navi.closeAtacamaProfilePage();

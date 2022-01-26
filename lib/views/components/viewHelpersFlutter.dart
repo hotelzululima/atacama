@@ -2,7 +2,8 @@ import '../../navigation/NavWrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:interzone/world.dart';
 import '../../sites/clubChonkyLoc.dart';
-import '../../actions/MessageActions.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'emojis.dart';
 
 zlinkButtonHelper(String url, String text, String author, String mentions) {
   var s = '<form action="' +
@@ -141,6 +142,44 @@ articlePostCleanBodyHelper(ModeratorEntry p) {
     s = s + element + ' ';
   });
   return s;
+}
+
+List<Widget> articlePostWrapBodyHelper(ModeratorEntry p) {
+  //clean out outbound scheisse, todo allow @mention clix
+  List<Widget> _l = [];
+  var s = '';
+  var su = p.body.split(' ');
+  var mda = p.markdownAnchors;
+  if (p.markdownAnchors.isEmpty) {
+    _l.add(Text(p.cleanedBody));
+    return _l;
+  }
+  var mdac = 0;
+  su.forEach((element) {
+    if (element.startsWith('![')) return;
+    if (element.startsWith('!|')) return;
+    if (element.startsWith('&')) return;
+    if (element.startsWith('[')) {
+      if (mda.isEmpty || mdac > mda.length) return;
+      _l.add(
+        GestureDetector(
+          child: Text(
+            mda[mdac].first,
+            style: TextStyle(
+                color: Colors.blue, decoration: TextDecoration.underline),
+          ),
+          onTap: () async => await canLaunch(mda[0].last)
+              ? await launch(mda[0].last)
+              : throw 'Something bad happend',
+        ),
+      );
+      mdac++;
+      return;
+    }
+    _l.add(Text(s + ' '));
+    //s = s + element + ' ';
+  });
+  return _l;
 }
 
 articleReplyHelperHTML(ModeratorEntry r, ModeratorEntry threadParent,
@@ -309,11 +348,16 @@ ButtonBar articleAuthorHelper(
   } else {
     s += '<div class="abar"><dl>';
   }*/
-
+  s.add(CircleAvatar(
+      backgroundColor: Colors.grey[100],
+      radius: 20,
+      child: Text(
+        p.avatar,
+        style: TextStyle(fontSize: 26, color: Colors.white),
+      )));
   //s.add(linkButtonHelper('/tg/all', '@' + p.softNick + '🌱', p.softNick, ''));
   s.add(TextButton(
-    child: Text(
-        "@" + p.softNick + (p.views == 0 ? '' : ' 👁' + p.views.toString())),
+    child: Text(p.softNick + (p.views == 0 ? '' : ' 👁' + p.views.toString())),
     //textColor: Colors.white,
     //color: Colors.green,
     onPressed: () {
@@ -362,4 +406,27 @@ String articlePostCommentsHelper(ModeratorEntry p, List<ModeratorEntry> l) {
   if (r.isEmpty) return 'Comment now';
   if (p.flags.isSeen) r.length.toString() + ' comments';
   return r.length.toString() + ' comments ⭐️';
+}
+
+List _avatars = [];
+List<String> avatarAvailableList(String init) {
+  if (_avatars.isEmpty) {
+    _avatars = animals.values.toList();
+    _avatars.shuffle();
+  }
+  return [init, ..._avatars];
+}
+
+List<Widget> avatarCarouselSlider(String init) {
+  List<Widget> _l = [];
+  avatarAvailableList(init).forEach((element) {
+    _l.add(CircleAvatar(
+        backgroundColor: Colors.grey[100],
+        radius: 5,
+        child: Text(
+          element,
+          style: TextStyle(fontSize: 52, color: Colors.white),
+        )));
+  });
+  return _l;
 }

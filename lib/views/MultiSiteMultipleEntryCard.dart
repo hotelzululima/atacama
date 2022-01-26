@@ -41,7 +41,9 @@ Card MultiSiteMultipleEntryCard(
                   onTap: () {
                     source.currentThreadShortLink = (m.shortLink);
                     source.threadByShortLink(m.shortLink);
-                    
+                    source.refreshThreadViaHTTP(m.shortLink);
+                    source.refreshAuthorViaHTTP(m.shortLink);
+                    source.refreshTaggedViaHTTP(m.shortLink);
                     navi.setcurrentObservedPostIndex = parentListIndex;
                     navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
                   },
@@ -53,7 +55,11 @@ Card MultiSiteMultipleEntryCard(
             Container(
               padding: EdgeInsets.all(16.0),
               alignment: Alignment.centerLeft,
-              child: Text(articlePostCleanBodyHelper(m)),
+              child: Wrap(children: articlePostWrapBodyHelper(m)),
+              //child:RichText()
+              /*child: Markdown(
+                data: articlePostCleanBodyHelper(m),
+              ),*/
             ),
             MultiSiteButtonBar(m, mflags, navi, source),
           ],
@@ -71,7 +77,7 @@ Card MultiSiteMultipleEntryCard(
           Container(
             padding: EdgeInsets.all(16.0),
             alignment: Alignment.centerLeft,
-            child: Text(articlePostCleanBodyHelper(m)),
+            child: Wrap(children: articlePostWrapBodyHelper(m)),
           ),
           MultiSiteButtonBar(m, mflags, navi, source),
         ],
