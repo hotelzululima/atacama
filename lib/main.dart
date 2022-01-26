@@ -22,7 +22,8 @@ void main() async {
 
   final sites = ModeratorSites();
   sites.init(hid);
-  await sites.followSite('omasome', 'https://moderator.rocks', 'atacomer');
+  await sites.followSite(
+      'omasome', 'https://moderator.rocks', 'atacomer', '🐼');
   //await sites.followSite('chonky', 'https://chonky.rocks', 'wonky');
 
   sites.setIpfsCredentials('', '717e9f8a57a35e1a2c00',
