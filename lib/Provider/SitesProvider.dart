@@ -128,9 +128,10 @@ class SitesProvider with ChangeNotifier {
     });
   }
 
-  Future<List<ModeratorEntry>?> replyEntry(String replyText, String pp) async {
+  Future<List<ModeratorEntry>?> replyEntry(
+      String replyText, String pp, Uint8List attachment) async {
     return source
-        .replyEntry(_currentThreadShortLink, replyText, pp)
+        .replyEntry(_currentThreadShortLink, replyText, pp, attachment)
         .then((data) {
       if (data != null && data.isNotEmpty) smoothNotifyListeners();
       return data;

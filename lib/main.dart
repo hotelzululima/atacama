@@ -22,12 +22,14 @@ void main() async {
 
   final sites = ModeratorSites();
   sites.init(hid);
-  await sites.followSite(
-      'omasome', 'https://moderator.rocks', 'atacomer', '🐼');
+  //await sites.followSite(
+  //    'omasome', 'https://moderator.rocks', 'atacomer', '🐼');
+
+  await sites.followSite('omasome', 'https://omasome.fi', 'atac012', '🐼');
   //await sites.followSite('chonky', 'https://chonky.rocks', 'wonky');
 
-  sites.setIpfsCredentials('', '717e9f8a57a35e1a2c00',
-      '4af41c9dc4eeab4ea09b63d48a07337d61d0a4f557181e17bd70b23dbe4a1a90', '');
+  sites.setIpfsCredentials('', 'e94a2eba4b88b6e1d7a0',
+      'e8f3357b3494fc48ac8b3baa8164a075e7bed86b675f06141e4ab0ceedf085ae', '');
 
   runApp(MultiProvider(
     providers: [

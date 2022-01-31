@@ -88,23 +88,6 @@ class _PostingKeyboardPageState extends State<PostingKeyboardPage> {
                                     });
                                   });
                                 }
-                                /*
-                                if (pickedFile != null) {
-                                  //navi.setUploadImage(pickedFile);
-                                  pickedFile.readAsBytes().then((pp) {
-                                    sites
-                                        .pushToPinataIPFS('', pp)
-                                        .then((value) {
-                                      setState(() {
-                                        ipfsImageQueued = value!;
-
-                                        _pickedFile = pp;
-                                      });
-                                    });
-                                  });
-                                  //print(pickedFile.name);
-                                }*/
-
                               } catch (e) {}
 
                               //_focusNodeName.requestFocus();

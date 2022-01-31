@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'MultiSiteSingleThreadCard.dart';
 import 'ModeratorViewSettingsDefault.dart';
 import '../navigation/NavWrapper.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
@@ -21,6 +22,8 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
   get _refreshIndicatorKey => null;
   bool _refreshingData = false;
   bool _replied = false;
+  Uint8List? _pickedFile;
+  final ImagePicker _picker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     final sites = context.watch<SitesProvider>();
@@ -110,7 +113,25 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                     child: Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () async {
+                            //attach filum
+                            try {
+                              final pickedFile = await _picker.pickImage(
+                                source: ImageSource.gallery,
+                                maxWidth: 640,
+                                maxHeight: 640,
+                                imageQuality: 72,
+                              );
+                              if (pickedFile != null) {
+                                pickedFile.readAsBytes().then((pp) {
+                                  _pickedFile = pp;
+                                  setState(() {
+                                    _pickedFile = pp;
+                                  });
+                                });
+                              }
+                            } catch (e) {}
+                          },
                           child: Container(
                             height: 30,
                             width: 30,
@@ -119,7 +140,7 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                             child: Icon(
-                              Icons.add,
+                              Icons.attach_file,
                               color: Colors.white,
                               size: 20,
                             ),
@@ -154,7 +175,11 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                               }
                               await sites
                                   .replyEntry(
-                                      reps, sites.currentThread.last.shortLink)
+                                      reps,
+                                      sites.currentThread.last.shortLink,
+                                      _pickedFile != null
+                                          ? _pickedFile!
+                                          : Uint8List(0))
                                   .then((value) {
                                 if (value == null) return;
                               });

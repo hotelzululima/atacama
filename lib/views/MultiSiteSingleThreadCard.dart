@@ -51,7 +51,7 @@ Card MultiSiteSingleThreadCard(
             Container(
               padding: EdgeInsets.all(4.0),
               alignment: Alignment.centerLeft,
-              child: Text(articlePostCleanBodyHelper(m)),
+              child: Wrap(children: articlePostWrapBodyHelper(m)),
             ),
             ButtonBar(
               children: [
@@ -96,7 +96,7 @@ Card MultiSiteSingleThreadCard(
           Container(
             padding: EdgeInsets.all(16.0),
             alignment: Alignment.centerLeft,
-            child: Text(articlePostCleanBodyHelper(m)),
+            child: Wrap(children: articlePostWrapBodyHelper(m)),
           ),
           ButtonBar(
             children: [
