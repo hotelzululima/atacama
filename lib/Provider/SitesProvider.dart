@@ -72,6 +72,18 @@ class SitesProvider with ChangeNotifier {
     return t;
   }
 
+  Future<bool> LikeEntry(ModeratorEntry m) async {
+    final t = source.likeEntry(m.shortLink);
+    smoothNotifyListeners();
+    return t;
+  }
+
+  Future<bool> unlikeEntry(ModeratorEntry m) async {
+    final t = source.unlikeEntry(m.shortLink);
+    smoothNotifyListeners();
+    return t;
+  }
+
   Future<bool> MuteAuthor(String shortLink) {
     final t = source.muteAuthor(shortLink);
     smoothNotifyListeners();
@@ -101,6 +113,8 @@ class SitesProvider with ChangeNotifier {
   Future<bool> setNickAvatar(String nick, String avatar, String site) =>
       source.setNickAvatar(nick, avatar, site);
   Future<bool> get refreshAllViaHTTP {
+    //if connection was lost, try to get it up again
+    source.setOnline();
     final t = source.refreshAllViaHTTP;
     smoothNotifyListeners();
     return t;
@@ -182,4 +196,9 @@ class SitesProvider with ChangeNotifier {
   }
 
   bool markSeen(String shortLink) => source.markSeenOmni(shortLink);
+
+  int get ipfsQflushFailed => source.ipfsQflushFailed;
+  get setOnline => source.setOnline();
+  get setOffline => source.setOffline();
+  get online => source.online;
 }

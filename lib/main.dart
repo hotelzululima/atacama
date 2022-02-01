@@ -22,13 +22,10 @@ void main() async {
 
   final sites = ModeratorSites();
   sites.init(hid);
-  //await sites.followSite(
-  //    'omasome', 'https://moderator.rocks', 'atacomer', '🐼');
 
-  await sites.followSite('omasome', 'https://omasome.fi', 'atac012', '🐼');
-  //await sites.followSite('chonky', 'https://chonky.rocks', 'wonky');
-  sites.setIpfsCredentials('', 'your pinata key', 'your pinata key2', '');
-
+  await sites.followSite('omasome', 'https://omasome.fi', 'atac013', '🐼');
+  sites.setIpfsCredentials('', 'your_pinata_key_a', 'your_pinata_key_a', '');
+  //sites.setOffline;
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => SitesProvider(sites)),

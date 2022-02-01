@@ -70,7 +70,11 @@ class _PostingKeyboardPageState extends State<PostingKeyboardPage> {
                     height: size.height / 3,
                     child: _pickedFile == null
                         ? IconButton(
-                            icon: const Icon(Icons.attachment_outlined),
+                            icon: const Icon(
+                              Icons.attach_file,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                             tooltip: 'Attach a picture to post',
                             onPressed: () async {
                               try {
