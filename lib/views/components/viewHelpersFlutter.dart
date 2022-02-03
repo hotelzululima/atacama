@@ -151,7 +151,7 @@ List<Widget> articlePostWrapBodyHelper(ModeratorEntry p) {
   var su = p.body.split(' ');
   var mda = p.markdownAnchors;
   if (p.markdownAnchors.isEmpty) {
-    _l.add(Text(p.cleanedBody));
+    _l.add(Text(p.cleanedBody, style: TextStyle(fontSize: 18.0)));
     return _l;
   }
   var mdac = 0;
@@ -176,7 +176,7 @@ List<Widget> articlePostWrapBodyHelper(ModeratorEntry p) {
       mdac++;
       return;
     }
-    _l.add(Text(s + ' '));
+    _l.add(Text(s + ' ', style: TextStyle(fontSize: 18.0)));
     //s = s + element + ' ';
   });
   return _l;

@@ -5,6 +5,7 @@ import 'package:interzone/world.dart';
 import 'components/viewHelpersFlutter.dart';
 import '../navigation/NavWrapper.dart';
 import 'package:share_plus/share_plus.dart';
+import 'components/multiSiteButtonBar.dart';
 
 Card MultiSiteSingleThreadCard(
     ModeratorEntry m,
@@ -53,34 +54,7 @@ Card MultiSiteSingleThreadCard(
               alignment: Alignment.centerLeft,
               child: Wrap(children: articlePostWrapBodyHelper(m)),
             ),
-            ButtonBar(
-              children: [
-                /*TextButton(
-                child: const Text('CONTACT AGENT'),
-                onPressed: () {/* ... */},
-              ),*/
-                TextButton(
-                  onPressed: () {
-                    String l = m.siteUrl + '/t/' + m.shortLink;
-                    Share.share(l, subject: m.twitterPostContent);
-
-                    //navi.signal(AtacamaAction.viewThread, m.shortLink);
-                  },
-                  child: Icon(Icons.share),
-                ),
-                /*TextButton(
-                  onPressed: () {
-                    mes.setCurrentThreadRoot = m;
-                    //mes.filterShortLink = m.shortLink;
-                    navi.showThreadPage(m.shortLink);
-                    source.refreshThreadViaHTTP(m.siteUrl, m.shortLink);
-                    //navi.signal(AtacamaAction.viewThread, m.shortLink);
-                  },
-                  child: Text(articlePostCommentsHelper(
-                      m, mes.repliesToThread(m.keyHint))),
-                ),*/
-              ],
-            )
+            //MultiSiteReplyButtonBar(m, mflags, navi, source),
           ],
         ));
   }
@@ -93,30 +67,12 @@ Card MultiSiteSingleThreadCard(
             //subtitle: Text(subheading),
             //trailing: Icon(Icons.favorite_outline),
           ),
+          MultiSiteReplyButtonBar(m, mflags, navi, source),
           Container(
             padding: EdgeInsets.all(16.0),
             alignment: Alignment.centerLeft,
             child: Wrap(children: articlePostWrapBodyHelper(m)),
           ),
-          ButtonBar(
-            children: [
-              /*TextButton(
-                child: const Text('CONTACT AGENT'),
-                onPressed: () {/* ... */},
-              ),*/
-              TextButton(
-                onPressed: () {
-                  mes.setCurrentThreadRoot = m;
-                  //mes.filterShortLink = m.shortLink;
-                  navi.showThreadPage(m.shortLink);
-                  source.threadByShortLink(m.shortLink);
-                  //navi.signal(AtacamaAction.viewThread, m.shortLink);
-                },
-                child: Text(articlePostCommentsHelper(
-                    m, mes.repliesToThread(m.keyHint))),
-              ),
-            ],
-          )
         ],
       ));
 }

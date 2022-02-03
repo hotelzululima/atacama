@@ -10,7 +10,6 @@ import 'MultiSiteSingleThreadCard.dart';
 import 'ModeratorViewSettingsDefault.dart';
 import '../navigation/NavWrapper.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class MultiSiteThreadPage extends StatefulWidget {

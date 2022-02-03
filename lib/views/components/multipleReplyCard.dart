@@ -42,7 +42,8 @@ Card multipleReplyCard(
             Container(
               padding: EdgeInsets.all(16.0),
               alignment: Alignment.centerLeft,
-              child: Text(articlePostCleanBodyHelper(m)),
+              child: Text(articlePostCleanBodyHelper(m),
+                  style: TextStyle(fontSize: 18.0)),
             ),
             ButtonBar(
               children: [
@@ -54,8 +55,10 @@ Card multipleReplyCard(
                   onPressed: () {
                     navi.signal(AtacamaAction.viewThread, m.shortLink);
                   },
-                  child: Text(articlePostCommentsHelper(
-                      m, mes.source.childrenOf(m.hint))),
+                  child: Text(
+                      articlePostCommentsHelper(
+                          m, mes.source.childrenOf(m.hint)),
+                      style: TextStyle(fontSize: 18.0)),
                 ),
               ],
             )
@@ -74,7 +77,8 @@ Card multipleReplyCard(
           Container(
             padding: EdgeInsets.all(16.0),
             alignment: Alignment.centerLeft,
-            child: Text(articlePostCleanBodyHelper(m)),
+            child: Text(articlePostCleanBodyHelper(m),
+                style: TextStyle(fontSize: 18.0)),
           ),
           ButtonBar(
             children: [
@@ -86,8 +90,9 @@ Card multipleReplyCard(
                 onPressed: () {
                   navi.signal(AtacamaAction.viewThread, m.shortLink);
                 },
-                child: Text(articlePostCommentsHelper(
-                    m, mes.source.childrenOf(m.hint))),
+                child: Text(
+                    articlePostCommentsHelper(m, mes.source.childrenOf(m.hint)),
+                    style: TextStyle(fontSize: 18.0)),
               ),
             ],
           )

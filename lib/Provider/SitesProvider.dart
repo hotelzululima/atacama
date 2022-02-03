@@ -43,7 +43,7 @@ class SitesProvider with ChangeNotifier {
   void smoothNotifyListeners() {
     if (_notifying) return;
     _notifying = true;
-    Timer(Duration(milliseconds: 600), () {
+    Timer(Duration(milliseconds: 800), () {
       notifyListeners();
       _notifying = false;
     });
@@ -72,19 +72,20 @@ class SitesProvider with ChangeNotifier {
     return t;
   }
 
-  Future<bool> LikeEntry(ModeratorEntry m) async {
-    final t = source.likeEntry(m.shortLink);
+  Future<bool> LikeEntry(String shortLink) async {
+    final t = await source.likeEntry(shortLink);
+    if (t < 0) return false;
+    smoothNotifyListeners();
+    return true;
+  }
+
+  Future<int> unlikeEntry(String shortLink) async {
+    final t = source.unlikeEntry(shortLink);
     smoothNotifyListeners();
     return t;
   }
 
-  Future<bool> unlikeEntry(ModeratorEntry m) async {
-    final t = source.unlikeEntry(m.shortLink);
-    smoothNotifyListeners();
-    return t;
-  }
-
-  Future<bool> MuteAuthor(String shortLink) {
+  Future<int> MuteAuthor(String shortLink) {
     final t = source.muteAuthor(shortLink);
     smoothNotifyListeners();
     return t;
@@ -116,6 +117,8 @@ class SitesProvider with ChangeNotifier {
     //if connection was lost, try to get it up again
     source.setOnline();
     final t = source.refreshAllViaHTTP;
+    //send pending items if we have some
+    source.outgoingMessageCacheSend(0);
     smoothNotifyListeners();
     return t;
   }
@@ -147,18 +150,25 @@ class SitesProvider with ChangeNotifier {
     return source
         .replyEntry(_currentThreadShortLink, replyText, pp, attachment)
         .then((data) {
-      if (data != null && data.isNotEmpty) smoothNotifyListeners();
-      return data;
+      if (data < 0) return [];
+      return source.outgoingMessageCacheSend(data).then((data) {
+        smoothNotifyListeners();
+        return data;
+      });
     });
   }
 
-  Future<bool> postEntry(
+  Future<List<ModeratorEntry>?> postEntry(
       String shortLink, String text, Uint8List attachment) async {
-    final t = await source.postEntry(shortLink, text, attachment);
-    if (t == null) return false;
-
-    smoothNotifyListeners();
-    return true;
+    return await source
+        .postEntry(shortLink, text, attachment)
+        .then((data) async {
+      if (data < 0) return [];
+      return await source.outgoingMessageCacheSend(data).then((dara) {
+        smoothNotifyListeners();
+        return dara;
+      });
+    });
   }
 
   List<ModeratorEntry> get xcombinedEntrySetAsList =>

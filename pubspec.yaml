@@ -42,8 +42,6 @@ dependencies:
   scrollable_positioned_list: ^0.2.3
   blurhash_dart: ^1.1.0
   carousel_slider: ^4.0.0
-  device_info: ^2.0.0
-  flutter_udid: ^2.0.0
   typed_messages: ^1.1.0
   
 
