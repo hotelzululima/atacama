@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:math' show Random;
+import 'dart:typed_data';
 
-import 'package:peer_node_connection/peer_node_connection.dart';
-import 'package:typed_messages/typed_messages.dart';
+//import 'package:peer_node_connection/peer_node_connection.dart';
+//import 'package:typed_messages/typed_messages.dart';
 
-import 'port_message.dart';
+import 'port_message.darn';
 
 void log(
   String message, {
@@ -17,8 +18,8 @@ void log(
   if (stackTrace != null) print(stackTrace);
 }
 
-Future<void> peerAdapterInit(Function p4pOnConnect, Function p4pOnMessage,
-    Function p4pSendMessage) async {
+Future<void> peerAdapterInit(PortMessage Function(PortMessage d) p4pOnConnect,
+    Future<PortMessage> Function(PortMessage d) p4pOnMessage) async {
   // use PortMessage prototype
   IMessagePrototype.definePrototype(const PortMessagePrototype());
 
@@ -39,9 +40,9 @@ Future<void> peerAdapterInit(Function p4pOnConnect, Function p4pOnMessage,
     // send port message to peer on connect
     peerConnect: (peer) {
       log('peer connected: $peer', name: 'Node');
-      final t = p4pOnConnect();
-      if (!t.isEmpty) {
-        peer.sendBytes(t);
+      final t = p4pOnConnect(PortMessage(peer.port, 0, 0, Uint8List(0)));
+      if (t.type == 1) {
+        peer.sendMessage(t);
       }
       //peer.sendMessage(PortMessage(Random().nextInt(29000) + 1000));
     },
@@ -53,9 +54,9 @@ Future<void> peerAdapterInit(Function p4pOnConnect, Function p4pOnMessage,
   );
 
   // handle message of type PortMessage
-  node.onMessage<PortMessage>((message, peer) {
+  node.onMessage<PortMessage>((message, peer) async {
     log('received peer port message: $message from $peer', name: 'Node');
-    final t = p4pOnMessage(message);
+    final t = await p4pOnMessage(message);
     //satisfying want?
     if (t != null) {
       peer.sendMessage(t);
@@ -64,8 +65,8 @@ Future<void> peerAdapterInit(Function p4pOnConnect, Function p4pOnMessage,
 
   // start node server
   await node.start(); // port default value is 0, which means use a random port
-
-  createPeer(node.port, p4pOnMessage); // create simple peer
+  node.sendMessage(PortMessage(0, 0, 0, Uint8List(0)));
+  //createPeer(node.port, p4pOnMessage); // create simple peer
 
   await node.onNextEmit<NodeOnStopEvent>(); // await for server to shutdown
   // await node.destroy(); // clean memory

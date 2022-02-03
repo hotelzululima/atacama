@@ -1,0 +1,51 @@
+Uint8List p4pOnConnect(Uint8List message) {
+    final Uint8List t = sites.xxWants;
+    if (t.isNotEmpty) {
+      return t;
+    }
+    return Uint8List(0);
+  }
+
+  Future<Uint8List> p4pOnMessage(Uint8List bytes) async {
+    final int type = BytesReader(bytes).readUint(0, 1);
+    final int length = BytesReader(bytes).readUint(1, 9);
+    final int xx = BytesReader(bytes).readUint(9, 17);
+    final Uint8List data =
+        BytesReader(bytes).readBytes(17, bytes.lengthInBytes);
+    switch (type) {
+      case 0:
+        //request for xx data
+
+        break;
+      case 1:
+        final Uint8List s = await sites.satisfyXXwant(data);
+        if (s.isNotEmpty) {
+          final writer = BytesWriter(s.lengthInBytes + 32);
+          // write 1byte id at offset 0
+          writer.writeSingleByte(1);
+          writer.writeUint(s.lengthInBytes, 8); //data len
+          writer.writeUint(0, 8); //xxhash
+          writer.writeBytes(s);
+          return writer.toBuffer();
+        }
+        break;
+      case 2:
+        sites.injectXX(xx, data);
+        //ask for more
+        final Uint8List s = sites.xxWants;
+        if (s.isNotEmpty) {
+          final writer = BytesWriter(s.lengthInBytes + 32);
+          // write 1byte id at offset 0
+          writer.writeSingleByte(1);
+          writer.writeUint(s.lengthInBytes, 8); //data len
+          writer.writeUint(0, 8); //xxhash
+          writer.writeBytes(s);
+          return writer.toBuffer();
+        }
+        break;
+    }
+
+    return Uint8List(0);
+  }
+
+  nearbyPeerAdapterInit(p4pOnConnect, p4pOnMessage);

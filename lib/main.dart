@@ -12,8 +12,9 @@ import 'package:interzone/ModeratorSites.dart';
 
 import 'navigation/NavWrapper.dart';
 import '/sites/omasomeLoc.dart';
-import 'p4p/peerAdapter.dart';
+import 'p4p/nearbyPeerAdapter.dart';
 import 'p4p/port_message.dart';
+import 'package:typed_messages/typed_messages.dart';
 
 Uint8List Uint64binaryList(List<int> d) {
   if (d.isEmpty) return Uint8List(0);
@@ -56,43 +57,6 @@ void main() async {
   sites.setIpfsCredentials('', 'e94a2eba4b88b6e1d7a0',
       'e8f3357b3494fc48ac8b3baa8164a075e7bed86b675f06141e4ab0ceedf085ae', '');
 
-  p4pOnConnect(PortMessage message) {
-    final List<int> t = sites.xxWants();
-    if (t.isNotEmpty) {
-      return PortMessage(message.port, 1, 0, Uint64binaryList(t));
-    }
-  }
-
-  p4pOnMessage(PortMessage message) {
-    switch (message.type) {
-      case 0:
-        //request for xx data
-
-        break;
-      case 1:
-        final Uint8List s = sites.satisfyXXwant(message.data);
-        if (s.isNotEmpty) {
-          return PortMessage(message.port, 2, 0, s);
-        }
-        break;
-      case 2:
-        sites.injectXXwant(message.xx, message.data);
-        //ask for more
-        final List<int> t = sites.xxWants();
-        if (t.isNotEmpty) {
-          return PortMessage(message.port, 1, 0, Uint64binaryList(t));
-        }
-        break;
-    }
-  }
-
-  ;
-  p4pSendMessage(PortMessage message) {
-    return 1;
-  }
-
-  peerAdapterInit(p4pOnConnect, p4pOnMessage, p4pSendMessage);
-  //sites.setOffline;
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => SitesProvider(sites)),

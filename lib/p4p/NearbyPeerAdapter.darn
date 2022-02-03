@@ -1,0 +1,136 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math' show Random;
+import 'dart:typed_data';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter_nearby_connections/flutter_nearby_connections.dart';
+import 'package:device_info/device_info.dart';
+
+class _DevicesListScreenState {
+  List<Device> devices = [];
+  List<Device> connectedDevices = [];
+  late NearbyService nearbyService;
+  late StreamSubscription subscription;
+  late StreamSubscription receivedDataSubscription;
+  late DeviceInfoPlugin deviceInfo;
+  bool isInit = false;
+
+  void init(Uint8List Function(Uint8List d) p4pOnConnect,
+      Future<Uint8List> Function(Uint8List d) p4pOnMessage) async {
+    String devInfo = '';
+    deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      devInfo = androidInfo.model;
+    }
+    if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      devInfo = iosInfo.localizedModel;
+    }
+    await nearbyService.init(
+        serviceType: 'mpconn',
+        deviceName: devInfo,
+        strategy: Strategy.P2P_CLUSTER,
+        callback: (isRunning) async {
+          if (isRunning) {
+            //if (widget.deviceType == DeviceType.browser) {
+
+            await nearbyService.stopBrowsingForPeers();
+            await Future.delayed(Duration(microseconds: 200));
+            await nearbyService.startBrowsingForPeers();
+            /*} else {
+              await nearbyService.stopAdvertisingPeer();
+              await nearbyService.stopBrowsingForPeers();
+              await Future.delayed(Duration(microseconds: 200));
+              await nearbyService.startAdvertisingPeer();
+              await nearbyService.startBrowsingForPeers();
+            }*/
+          }
+        });
+    subscription =
+        nearbyService.stateChangedSubscription(callback: (devicesList) {
+      devicesList.forEach((element) {
+        print(
+            " deviceId: ${element.deviceId} | deviceName: ${element.deviceName} | state: ${element.state}");
+
+        if (Platform.isAndroid) {
+          if (element.state == SessionState.connected) {
+            nearbyService.stopBrowsingForPeers();
+          } else {
+            nearbyService.startBrowsingForPeers();
+          }
+        }
+      });
+    });
+    receivedDataSubscription =
+        nearbyService.dataReceivedSubscription(callback: (data) async {
+      //log('received peer port message: $message from $peer', name: 'Node');
+      final t = await p4pOnMessage(base64Decode(data.message.toString()));
+      //satisfying want?
+      if (t != null) {
+        nearbyService.sendMessage(data.deviceID, base64Encode(t));
+      }
+    });
+  }
+
+  void dispose() {
+    subscription.cancel();
+    receivedDataSubscription.cancel();
+    nearbyService.stopBrowsingForPeers();
+    nearbyService.stopAdvertisingPeer();
+  }
+
+  String getStateName(SessionState state) {
+    switch (state) {
+      case SessionState.notConnected:
+        return "disconnected";
+      case SessionState.connecting:
+        return "waiting";
+      default:
+        return "connected";
+    }
+  }
+
+  Color getStateColor(SessionState state) {
+    switch (state) {
+      case SessionState.notConnected:
+        return Colors.black;
+      case SessionState.connecting:
+        return Colors.grey;
+      default:
+        return Colors.green;
+    }
+  }
+
+  Color getButtonColor(SessionState state) {
+    switch (state) {
+      case SessionState.notConnected:
+      case SessionState.connecting:
+        return Colors.green;
+      default:
+        return Colors.red;
+    }
+  }
+}
+
+void log(
+  String message, {
+  String name = 'main',
+  Object? error,
+  StackTrace? stackTrace,
+}) {
+  print('[$name] $message');
+  if (error != null) print(error);
+  if (stackTrace != null) print(stackTrace);
+}
+
+Future<void> nearbyPeerAdapterInit(Uint8List Function(Uint8List d) p4pOnConnect,
+    Future<Uint8List> Function(Uint8List d) p4pOnMessage) async {
+  final ds = _DevicesListScreenState();
+  ds.nearbyService = NearbyService();
+  ds.init(p4pOnConnect, p4pOnMessage);
+
+  print('completed!');
+}

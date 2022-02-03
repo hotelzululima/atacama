@@ -6,7 +6,6 @@ import 'package:interzone/interop/xxhash/lib/fast_hash.dart';
 import 'dart:math';
 import 'dart:async';
 import 'dart:isolate';
-import 'package:peer_node_connection/peer_node_connection.dart';
 
 class xxCache {
   Map<int, Uint8List> _xxStash = {};
