@@ -62,13 +62,7 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
                 children: [
                   SizedBox(
                       height: size.height / 3.6,
-                      /*child: CircleAvatar(
-                        backgroundColor: Colors.grey[100],
-                        radius: 5,
-                        child: Text(
-                          sites.avatar,
-                          style: TextStyle(fontSize: 52, color: Colors.white),
-                        )),*/
+                      
                       child: CarouselSlider(
                         options: CarouselOptions(
                           height: 400.0,
@@ -90,13 +84,15 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
                           );
                         }).toList(),
                       )),
-                  Text('swipe to change your avatar'),
+                  Text('swipe to change your avatar',
+                      style: TextStyle(fontSize: 18.0)),
                   TextFormField(
                     controller: myTextEditingController,
                     maxLength: 10,
                     focusNode: _focusNodeQuantity,
                     keyboardType: TextInputType.name,
                     decoration: InputDecoration(
+                      labelStyle: TextStyle(fontSize: 16.0),
                       labelText: "add your user handle here",
                     ),
                     onEditingComplete: () {

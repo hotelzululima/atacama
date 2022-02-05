@@ -8,7 +8,7 @@
 PRODUCT_NAME = atacama
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.atacama
+PRODUCT_BUNDLE_IDENTIFIER = com.moderator.atacama
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2021 osuuskunta hastur. All rights reserved.

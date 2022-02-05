@@ -288,7 +288,7 @@ class xxCache {
 
     try {
       return HttpClient()
-          .getUrl(Uri.parse('https://ipfs.io/ipfs/' + cid))
+          .getUrl(Uri.parse('https://cloudflare-ipfs.com/ipfs/' + cid))
           .timeout(Duration(milliseconds: 1512)) // produces a request object
           .then((request) => request.close()) // sends the request
           .then((response) async {

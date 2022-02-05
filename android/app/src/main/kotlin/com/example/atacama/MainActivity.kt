@@ -1,4 +1,4 @@
-package com.example.atacama
+package com.moderator.atacama
 
 import io.flutter.embedding.android.FlutterActivity
 

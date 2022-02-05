@@ -15,11 +15,6 @@ Card MultiSiteSingleThreadCard(
     BottomNavigationBarProvider navi,
     SitesProvider source,
     int parentListIndex) {
-  var heading = '\$2300 per month';
-  var subheading = '2 bed, 1 bath, 1300 sqft';
-  Image? cardImage;
-  var supportingText =
-      'Beautiful home to rent, recently refurbished with modern appliances...';
   //we display this, mark it seen
   if (!m.flags.isSeen) {
     source.markSeen(m.shortLink);

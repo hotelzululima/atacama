@@ -69,34 +69,40 @@ class _PostingKeyboardPageState extends State<PostingKeyboardPage> {
                   SizedBox(
                     height: size.height / 3,
                     child: _pickedFile == null
-                        ? IconButton(
-                            icon: const Icon(
-                              Icons.attach_file,
-                              color: Colors.white,
-                              size: 20,
+                        ? Container(
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              color: Colors.lightBlue,
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            tooltip: 'Attach a picture to post',
-                            onPressed: () async {
-                              try {
-                                final pickedFile = await _picker.pickImage(
-                                  source: ImageSource.gallery,
-                                  maxWidth: 640,
-                                  maxHeight: 640,
-                                  imageQuality: 72,
-                                );
-                                if (pickedFile != null) {
-                                  pickedFile.readAsBytes().then((pp) {
-                                    _pickedFile = pp;
-                                    setState(() {
-                                      _pickedFile = pp;
-                                    });
-                                  });
-                                }
-                              } catch (e) {}
+                            child: IconButton(
+                                icon: const Icon(
+                                  Icons.attach_file,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                                tooltip: 'Attach a picture to post',
+                                onPressed: () async {
+                                  try {
+                                    final pickedFile = await _picker.pickImage(
+                                      source: ImageSource.gallery,
+                                      maxWidth: 640,
+                                      maxHeight: 640,
+                                      imageQuality: 72,
+                                    );
+                                    if (pickedFile != null) {
+                                      pickedFile.readAsBytes().then((pp) {
+                                        _pickedFile = pp;
+                                        setState(() {
+                                          _pickedFile = pp;
+                                        });
+                                      });
+                                    }
+                                  } catch (e) {}
 
-                              //_focusNodeName.requestFocus();
-                            },
-                          )
+                                  //_focusNodeName.requestFocus();
+                                }))
                         : Ink.image(
                             image: MemoryImage(_pickedFile!),
                             fit: BoxFit.fitWidth,
@@ -106,10 +112,29 @@ class _PostingKeyboardPageState extends State<PostingKeyboardPage> {
                     height: size.height / 13,
                     child: _pickedFile == null
                         ? Text(
-                            'tap on the red clip icon to attach a photograph',
+                            'tap on the clip icon to attach a photograph',
                             textAlign: TextAlign.center,
                           )
                         : null,
+                  ),
+                  SizedBox(
+                    height: size.height / 4,
+                    child: TextFormField(
+                        controller: myTextEditingController,
+                        maxLength: 768,
+                        maxLines: null,
+                        minLines: 3,
+                        focusNode: _focusNodeQuantity,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          labelText:
+                              "your post here. use #hashtags @mention people at will",
+                        ),
+                        //initialValue: navi.postingKeyboardTextFormFieldSeed,
+                        onEditingComplete: () {
+                          print('edco');
+                        },
+                        style: TextStyle(fontSize: 18.0)),
                   ),
                   /*TextField(
                     focusNode: _focusNodeName,
@@ -117,20 +142,7 @@ class _PostingKeyboardPageState extends State<PostingKeyboardPage> {
                       labelText: "Product Name",
                     ),
                   ),*/
-                  TextFormField(
-                    controller: myTextEditingController,
-                    maxLength: 1000,
-                    focusNode: _focusNodeQuantity,
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      labelText:
-                          "your post here. use #hashtags @mention people at will",
-                    ),
-                    //initialValue: navi.postingKeyboardTextFormFieldSeed,
-                    onEditingComplete: () {
-                      print('edco');
-                    },
-                  ),
+
                   TextButton(
                     child: Text("submit post"),
                     //textColor: Colors.white,
