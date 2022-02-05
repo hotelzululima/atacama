@@ -28,9 +28,9 @@ dependencies:
   #flutter_svg: ^0.18.0
   http: ^0.13.4
   provider: ^6.0.2
-  #interzone: ^1.0.15
-  interzone:
-    path: /Users/hoodownr/Documents/interzone
+  interzone: ^1.0.16
+  ##interzone:
+  #  path: /Users/hoodownr/Documents/interzone
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   receive_sharing_intent: ^1.4.5

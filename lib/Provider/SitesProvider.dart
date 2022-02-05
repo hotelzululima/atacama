@@ -62,7 +62,8 @@ class SitesProvider with ChangeNotifier {
   }
 
   Future<bool> ShareEntry(ModeratorEntry m) async {
-    final w = source.findSite(m.siteUrl);
+    //final w = source.findSite(m.siteUrl);
+    final w = source.homeSite;
     if (w == null) return false;
 
     String url = w.baseUrl + '/t/' + m.shortLink;
