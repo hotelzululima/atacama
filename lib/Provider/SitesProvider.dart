@@ -149,7 +149,7 @@ class SitesProvider with ChangeNotifier {
   Future<List<ModeratorEntry>?> replyEntry(
       String replyText, String pp, Uint8List attachment) async {
     return source
-        .replyEntry(_currentThreadShortLink, replyText, pp, attachment)
+        .replyEntry(_currentThreadShortLink, replyText, pp, attachment,'')
         .then((data) {
       if (data < 0) return [];
       return source.outgoingMessageCacheSend(data).then((data) {
@@ -162,7 +162,7 @@ class SitesProvider with ChangeNotifier {
   Future<List<ModeratorEntry>?> postEntry(
       String shortLink, String text, Uint8List attachment) async {
     return await source
-        .postEntry(shortLink, text, attachment)
+        .postEntry(shortLink, text, attachment,'')
         .then((data) async {
       if (data < 0) return [];
       return await source.outgoingMessageCacheSend(data).then((dara) {
