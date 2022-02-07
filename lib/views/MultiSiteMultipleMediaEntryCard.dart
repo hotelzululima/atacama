@@ -8,7 +8,7 @@ import 'components/multiSiteButtonBar.dart';
 import 'MultiSiteThreadPage.dart';
 import 'videoPage.dart';
 
-Card MultiSiteMultipleEntryCard(
+Card MultiSiteMultipleMediaEntryCard(
     BuildContext bc,
     ModeratorEntry m,
     MultiSiteModeratorEntrySetProvider mes,

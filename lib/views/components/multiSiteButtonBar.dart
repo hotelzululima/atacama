@@ -3,6 +3,7 @@ import '../../Provider/SitesProvider.dart';
 import 'package:interzone/world.dart';
 import '../../navigation/NavWrapper.dart';
 import 'viewHelpersFlutter.dart';
+import '../MultiSiteThreadPage.dart';
 
 ButtonBar MultiSiteReplyButtonBar(
     ModeratorEntry m,
@@ -49,8 +50,12 @@ ButtonBar MultiSiteReplyButtonBar(
   );
 }
 
-ButtonBar MultiSiteButtonBar(ModeratorEntry m, ModeratorViewSettings mflags,
-    BottomNavigationBarProvider navi, SitesProvider source) {
+ButtonBar MultiSiteButtonBar(
+    BuildContext bc,
+    ModeratorEntry m,
+    ModeratorViewSettings mflags,
+    BottomNavigationBarProvider navi,
+    SitesProvider source) {
   return ButtonBar(
     children: [
       /*TextButton(
@@ -92,7 +97,12 @@ ButtonBar MultiSiteButtonBar(ModeratorEntry m, ModeratorViewSettings mflags,
           //navi.setcurrentObservedPostIndex = parentListIndex;
           source.threadByShortLink(m.shortLink);
           source.currentThreadShortLink = m.shortLink;
-          navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
+          Navigator.push(
+              bc,
+              new MaterialPageRoute(
+                  builder: (context) => new MultiSiteThreadPage()));
+
+          //navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
         },
         child: Text(articlePostCommentsHelper(
             m, source.threadByShortLink(m.shortLink))),

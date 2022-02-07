@@ -235,7 +235,8 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
               onPressed: () {
                 //navi.signal(AtacamaAction.initPost, '');
                 sites.markSeen(currentThread.first.shortLink);
-                navi.closeMultiSiteThreadPage();
+                Navigator.pop(context);
+                //navi.closeMultiSiteThreadPage();
                 /*final ImagePicker _picker = ImagePicker();
           // Pick an image
           final XFile? image =

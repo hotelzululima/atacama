@@ -4,6 +4,8 @@ import '../Provider/SitesProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'MultiSiteMultipleEntryCard.dart';
+import 'MultiSiteMultipleMediaEntryCard.dart';
+
 import 'ModeratorViewSettingsDefault.dart';
 import '../navigation/NavWrapper.dart';
 import '../actions/MessageActions.dart';
@@ -77,23 +79,47 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
                 showChildOpacityTransition: false,
                 child: ListView.builder(
                   itemCount: allPostsFromAllSites.length,
+
                   itemBuilder: (context, i) {
-                    return MultiSiteMultipleEntryCard(
-                        allPostsFromAllSites[i],
-                        mes,
-                        mDebugFlags,
-                        allPostsFromAllSites[i].flags.attachements
-                            ? sites.readImageProvider(
-                                allPostsFromAllSites[i].siteUrl,
-                                allPostsFromAllSites[i].attachmentLinkAsXXint,
-                                allPostsFromAllSites[i].shortLink,
-                                allPostsFromAllSites[i].ipfsCid,
-                                allPostsFromAllSites[i].blurHash)
-                            : null,
-                        navi,
-                        sites,
-                        i,
-                        allPostsFromAllSites[i].siteUrl);
+                    return allPostsFromAllSites[i].videoCid.isEmpty
+                        ? MultiSiteMultipleEntryCard(
+                            context,
+                            allPostsFromAllSites[i],
+                            mes,
+                            mDebugFlags,
+                            allPostsFromAllSites[i].flags.attachements
+                                ? sites.readImageProvider(
+                                    allPostsFromAllSites[i].siteUrl,
+                                    allPostsFromAllSites[i]
+                                        .attachmentLinkAsXXint,
+                                    allPostsFromAllSites[i].shortLink,
+                                    allPostsFromAllSites[i].ipfsCid,
+                                    allPostsFromAllSites[i].blurHash)
+                                : null,
+                            navi,
+                            sites,
+                            i,
+                            allPostsFromAllSites[i].siteUrl)
+                        : MultiSiteMultipleMediaEntryCard(
+                            context,
+                            allPostsFromAllSites[i],
+                            mes,
+                            mDebugFlags,
+                            allPostsFromAllSites[i].flags.attachements
+                                ? sites.readMediaImageProvider(
+                                    allPostsFromAllSites[i].siteUrl,
+                                    allPostsFromAllSites[i]
+                                        .attachmentLinkAsXXint,
+                                    allPostsFromAllSites[i].shortLink,
+                                    allPostsFromAllSites[i].ipfsCid,
+                                    allPostsFromAllSites[i].blurHash,
+                                    allPostsFromAllSites[i].videoCid,
+                                    allPostsFromAllSites[i].audioCid)
+                                : null,
+                            navi,
+                            sites,
+                            i,
+                            allPostsFromAllSites[i].siteUrl);
                   },
                   //itemScrollController: itemScrollController,
                   //itemPositionsListener: itemPositionsListener,

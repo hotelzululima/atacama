@@ -27,7 +27,8 @@ void main() async {
   final sites = ModeratorSites();
   sites.init(hid);
 
-  await sites.followSite('omasome', 'https://omasome.fi', 'test16', '🐼');
+  //await sites.followSite('omasome', 'https://omasome.fi', 'test16', '🐼');
+  await sites.followSite('chonky', 'https://chonky.rocks', 'ch17', '🐼');
 
   sites.setIpfsCredentials('', 'pinata_api_key_0',
       'e8f3357b3494fc48ac8b3baa8164a075e7bed86b675f06141e4ab0ceedf085ae', '');

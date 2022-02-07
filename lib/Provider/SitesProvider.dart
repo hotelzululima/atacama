@@ -149,7 +149,7 @@ class SitesProvider with ChangeNotifier {
   Future<List<ModeratorEntry>?> replyEntry(
       String replyText, String pp, Uint8List attachment) async {
     return source
-        .replyEntry(_currentThreadShortLink, replyText, pp, attachment,'')
+        .replyEntry(_currentThreadShortLink, replyText, pp, attachment, '')
         .then((data) {
       if (data < 0) return [];
       return source.outgoingMessageCacheSend(data).then((data) {
@@ -162,7 +162,7 @@ class SitesProvider with ChangeNotifier {
   Future<List<ModeratorEntry>?> postEntry(
       String shortLink, String text, Uint8List attachment) async {
     return await source
-        .postEntry(shortLink, text, attachment,'')
+        .postEntry(shortLink, text, attachment, '')
         .then((data) async {
       if (data < 0) return [];
       return await source.outgoingMessageCacheSend(data).then((dara) {
@@ -185,6 +185,35 @@ class SitesProvider with ChangeNotifier {
   AssetImage pieru = AssetImage('assets/fetchingImagePlaceholder.png');
   ImageProvider readImageProvider(String site, int attachmentLinkAsXXint,
       String shortLink, String ipfsCid, String bHash) {
+    if (_images[attachmentLinkAsXXint] != null) {
+      return _images[attachmentLinkAsXXint]!;
+    }
+    source.pullIPFScid(ipfsCid, attachmentLinkAsXXint).then((value) async {
+      if (value.isNotEmpty) {
+        _images[attachmentLinkAsXXint] = MemoryImage(value);
+        smoothNotifyListeners();
+      }
+    });
+
+    if (bHash.isNotEmpty) {
+      if (_bhaCache[bHash] != null) return _bhaCache[bHash];
+      final bim = BlurHash.decode(bHash).toImage(35, 20);
+      final bia = Image.memory(Uint8List.fromList(img.encodeJpg(bim)));
+      _bhaCache[bHash] = bia.image;
+      return _bhaCache[bHash];
+    }
+
+    return pieru;
+  }
+
+  ImageProvider readMediaImageProvider(
+      String site,
+      int attachmentLinkAsXXint,
+      String shortLink,
+      String ipfsCid,
+      String bHash,
+      String videoCid,
+      String audioCid) {
     if (_images[attachmentLinkAsXXint] != null) {
       return _images[attachmentLinkAsXXint]!;
     }
