@@ -28,96 +28,6 @@ Card MultiSiteMultipleMediaEntryCard(
     source.markSeen(m.shortLink);
   }
 
-  if (m.flags.attachements && m.ipfsCid.isNotEmpty) {
-    return Card(
-        elevation: 4.0,
-        child: Column(
-          children: [
-            ListTile(
-              title: articleAuthorHelper(m, mes, navi),
-              //subtitle: Text(subheading),
-              //trailing: Icon(Icons.favorite_outline),
-            ),
-            Container(
-                height: 360.0,
-                child: InkWell(
-                  onTap: () {
-                    source.currentThreadShortLink = (m.shortLink);
-                    source.threadByShortLink(m.shortLink);
-                    source.refreshThreadViaHTTP(m.shortLink);
-                    source.refreshAuthorViaHTTP(m.shortLink);
-                    source.refreshTaggedViaHTTP(m.shortLink);
-                    navi.setcurrentObservedPostIndex = parentListIndex;
-                    Navigator.push(
-                        bc,
-                        new MaterialPageRoute(
-                            builder: (context) => new MultiSiteThreadPage()));
-
-                    //navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
-                  },
-                  child: Ink.image(
-                    image: i!,
-                    fit: BoxFit.fitWidth,
-                  ),
-                )),
-            Container(
-              padding: EdgeInsets.all(16.0),
-              alignment: Alignment.centerLeft,
-              child: Wrap(children: articlePostWrapBodyHelper(m)),
-              //child:RichText()
-              /*child: Markdown(
-                data: articlePostCleanBodyHelper(m),
-              ),*/
-            ),
-            MultiSiteButtonBar(bc, m, mflags, navi, source),
-          ],
-        ));
-  }
-  if (m.flags.attachements && m.videoCid.isNotEmpty) {
-    return Card(
-        elevation: 4.0,
-        child: Column(
-          children: [
-            ListTile(
-              title: articleAuthorHelper(m, mes, navi),
-              //subtitle: Text(subheading),
-              //trailing: Icon(Icons.favorite_outline),
-            ),
-            Container(
-                height: 360.0,
-                child: InkWell(
-                  onTap: () {
-                    source.currentThreadShortLink = (m.shortLink);
-                    source.threadByShortLink(m.shortLink);
-                    source.refreshThreadViaHTTP(m.shortLink);
-                    source.refreshAuthorViaHTTP(m.shortLink);
-                    source.refreshTaggedViaHTTP(m.shortLink);
-                    navi.setcurrentObservedPostIndex = parentListIndex;
-                    Navigator.push(
-                        bc,
-                        new MaterialPageRoute(
-                            builder: (context) => new VideoPage()));
-
-                    //navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
-                  },
-                  child: Ink.image(
-                    image: i!,
-                    fit: BoxFit.fitWidth,
-                  ),
-                )),
-            Container(
-              padding: EdgeInsets.all(16.0),
-              alignment: Alignment.centerLeft,
-              child: Wrap(children: articlePostWrapBodyHelper(m)),
-              //child:RichText()
-              /*child: Markdown(
-                data: articlePostCleanBodyHelper(m),
-              ),*/
-            ),
-            MultiSiteButtonBar(bc, m, mflags, navi, source),
-          ],
-        ));
-  }
   return Card(
       elevation: 4.0,
       child: Column(
@@ -128,9 +38,35 @@ Card MultiSiteMultipleMediaEntryCard(
             //trailing: Icon(Icons.favorite_outline),
           ),
           Container(
+              height: 360.0,
+              child: InkWell(
+                onTap: () {
+                  source.currentThreadShortLink = (m.shortLink);
+                  source.threadByShortLink(m.shortLink);
+                  source.refreshThreadViaHTTP(m.shortLink);
+                  source.refreshAuthorViaHTTP(m.shortLink);
+                  source.refreshTaggedViaHTTP(m.shortLink);
+                  navi.setcurrentObservedPostIndex = parentListIndex;
+                  Navigator.push(
+                      bc,
+                      new MaterialPageRoute(
+                          builder: (context) => new VideoPage()));
+
+                  //navi.showMultiSiteThreadPage(m.siteUrl, m.shortLink);
+                },
+                child: Ink.image(
+                  image: i!,
+                  fit: BoxFit.fitWidth,
+                ),
+              )),
+          Container(
             padding: EdgeInsets.all(16.0),
             alignment: Alignment.centerLeft,
             child: Wrap(children: articlePostWrapBodyHelper(m)),
+            //child:RichText()
+            /*child: Markdown(
+                data: articlePostCleanBodyHelper(m),
+              ),*/
           ),
           MultiSiteButtonBar(bc, m, mflags, navi, source),
         ],

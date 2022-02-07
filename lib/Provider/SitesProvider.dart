@@ -214,6 +214,7 @@ class SitesProvider with ChangeNotifier {
       String bHash,
       String videoCid,
       String audioCid) {
+    //we dont want to trigger pulls to large media
     if (_images[attachmentLinkAsXXint] != null) {
       return _images[attachmentLinkAsXXint]!;
     }
