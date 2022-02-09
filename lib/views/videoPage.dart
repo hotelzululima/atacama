@@ -64,10 +64,11 @@ class _ChewieDemoState extends State<VideoPage> {
     //_videoPlayerController2 =
     //    VideoPlayerController.network(srcs[currPlayIndex]);
     await Future.wait([
-      _videoPlayerController1.initialize(),
+      _videoPlayerController1.initialize()
       //_videoPlayerController2.initialize()
     ]);
     _createChewieController();
+    //_chewieController?.enterFullScreen();
     setState(() {});
   }
 
@@ -124,14 +125,16 @@ class _ChewieDemoState extends State<VideoPage> {
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController1,
       autoPlay: true,
-      looping: true,
-
+      looping: true, fullScreenByDefault: true,
+      showOptions: false,
       additionalOptions: (context) {
         return <OptionItem>[
           OptionItem(
-            onTap: toggleVideo,
-            iconData: Icons.live_tv_sharp,
-            title: 'Toggle Video Src',
+            onTap: () {
+              Navigator.pop(context);
+            },
+            iconData: Icons.close_fullscreen,
+            title: 'bail out',
           ),
         ];
       },
@@ -161,6 +164,7 @@ class _ChewieDemoState extends State<VideoPage> {
       //   color: Colors.grey,
       // ),
       // autoInitialize: true,
+      
     );
   }
 

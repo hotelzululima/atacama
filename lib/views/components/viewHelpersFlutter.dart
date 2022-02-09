@@ -357,7 +357,9 @@ ButtonBar articleAuthorHelper(
       )));
   //s.add(linkButtonHelper('/tg/all', '@' + p.softNick + '🌱', p.softNick, ''));
   s.add(TextButton(
-    child: Text(p.softNick + (p.views == 0 ? '' : ' 👁' + p.views.toString())),
+    child: Text(p.softNick +
+        (p.views == 0 ? '' : ' 👁' + p.views.toString()) +
+        (p.likes == 0 ? '' : ' 💓' + p.likes.toString())),
     //textColor: Colors.white,
     //color: Colors.green,
     onPressed: () {

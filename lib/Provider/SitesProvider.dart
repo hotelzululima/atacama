@@ -76,12 +76,14 @@ class SitesProvider with ChangeNotifier {
   Future<bool> LikeEntry(String shortLink) async {
     final t = await source.likeEntry(shortLink);
     if (t < 0) return false;
+    source.outgoingMessageCacheSend(t);
     smoothNotifyListeners();
     return true;
   }
 
   Future<int> unlikeEntry(String shortLink) async {
-    final t = source.unlikeEntry(shortLink);
+    final t = await source.unlikeEntry(shortLink);
+    source.outgoingMessageCacheSend(t);
     smoothNotifyListeners();
     return t;
   }
@@ -164,7 +166,7 @@ class SitesProvider with ChangeNotifier {
     return await source
         .postEntry(shortLink, text, attachment, '')
         .then((data) async {
-      if (data < 0) return [];
+      //if (data < 0) return [];
       return await source.outgoingMessageCacheSend(data).then((dara) {
         smoothNotifyListeners();
         return dara;

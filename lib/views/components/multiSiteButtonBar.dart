@@ -73,7 +73,6 @@ ButtonBar MultiSiteButtonBar(
           : TextButton(
               onPressed: () async {
                 await source.LikeEntry(m.shortLink);
-
                 //navi.signal(AtacamaAction.viewThread, m.shortLink);
               },
               child: Icon(Icons.thumb_up_outlined)),
