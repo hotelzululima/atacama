@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # keep last digit in sync with latest interzone
-version: 0.0.17
+version: 0.0.18
 
 environment:
   sdk: ">=2.14.2 <3.0.0"

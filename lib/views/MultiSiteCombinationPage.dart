@@ -100,7 +100,7 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
                             sites,
                             i,
                             allPostsFromAllSites[i].siteUrl)
-                        : MultiSiteMultipleMediaEntryCard(
+                        : MultiSiteMultipleEntryCard(
                             context,
                             allPostsFromAllSites[i],
                             mes,

@@ -149,24 +149,25 @@ List<Widget> articlePostWrapBodyHelper(ModeratorEntry p) {
   List<Widget> _l = [];
   var s = '';
   var su = p.body.split(' ');
+
   var mda = p.markdownAnchors;
   if (p.markdownAnchors.isEmpty) {
     _l.add(Text(p.cleanedBody, style: TextStyle(fontSize: 18.0)));
     return _l;
   }
   var mdac = 0;
+  bool fic = false;
   su.forEach((element) {
-    if (element.startsWith('![')) return;
-    if (element.startsWith('!|')) return;
-    if (element.startsWith('&')) return;
     if (element.startsWith('[')) {
       if (mda.isEmpty || mdac > mda.length) return;
       _l.add(
         GestureDetector(
           child: Text(
-            mda[mdac].first,
+            mda[mdac].first + ' ',
             style: TextStyle(
-                color: Colors.blue, decoration: TextDecoration.underline),
+                fontSize: 18.0,
+                color: Colors.blue,
+                decoration: TextDecoration.underline),
           ),
           onTap: () async => await canLaunch(mda[0].last)
               ? await launch(mda[0].last)
@@ -174,9 +175,20 @@ List<Widget> articlePostWrapBodyHelper(ModeratorEntry p) {
         ),
       );
       mdac++;
+      fic = true;
       return;
     }
-    _l.add(Text(s + ' ', style: TextStyle(fontSize: 18.0)));
+    if (fic && !element.endsWith(')')) return;
+    if (fic) {
+      fic = false;
+      return;
+    }
+    if (element.startsWith('!&')) return;
+    if (element.startsWith('!|')) return;
+    if (element.startsWith('![')) return;
+    if (element.startsWith('!£')) return;
+
+    _l.add(Text(element + ' ', style: TextStyle(fontSize: 18.0)));
     //s = s + element + ' ';
   });
   return _l;
