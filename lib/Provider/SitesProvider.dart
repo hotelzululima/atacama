@@ -45,6 +45,9 @@ class SitesProvider with ChangeNotifier {
     _notifying = true;
     Timer(Duration(milliseconds: 800), () {
       notifyListeners();
+
+      //save whatever
+      source.housekeep();
       _notifying = false;
     });
   }
