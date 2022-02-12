@@ -26,7 +26,7 @@ void main() async {
 
   final sites = ModeratorSites();
   await sites.init(hid);
-  await sites.followSite('chonky', 'https://chonky.rocks', 'torino', '🐼');
+  //await sites.followSite('chonky', 'https://chonky.rocks', 'torino', '🐼');
   //sites.switchSite('chonky', 'https:/chonky.rocks');
 
   /*await sites.followSite(

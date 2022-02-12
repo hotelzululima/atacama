@@ -29,6 +29,7 @@ class SitesProvider with ChangeNotifier {
   });
   SitesProvider(this.source);
   dynamic get allSites => source.allSites;
+  dynamic get homeSite => source.homeSite;
   /*void getData() async {
     http.Response response = await http.get(Constants.apiEndpoint);
     var data = jsonDecode(response.body);
@@ -184,7 +185,8 @@ class SitesProvider with ChangeNotifier {
 
   List<ModeratorEntry> get latestThreadsAsList =>
       source.latestThreadsEntrySet.all;
-
+  List<ModeratorEntry> get latestThreadsAsListHomeSite =>
+      source.HomeSiteLatestThreadsEntrySet.all;
   Map<int, MemoryImage> _images = {};
   Map<String, dynamic> _bhaCache = {};
   AssetImage pieru = AssetImage('assets/fetchingImagePlaceholder.png');

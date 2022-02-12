@@ -32,7 +32,10 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
     final mes = context.watch<MultiSiteModeratorEntrySetProvider>();
     //final xxc = context.watch<xxCacheProvider>();
     final navi = context.watch<BottomNavigationBarProvider>();
-    final allPostsFromAllSites = sites.latestThreadsAsList
+    /*final allPostsFromAllSites = sites.latestThreadsAsList
+        .where((element) => element.flags.isPost)
+        .toList();*/
+    final allPostsHomeSite = sites.latestThreadsAsListHomeSite
         .where((element) => element.flags.isPost)
         .toList();
     /*final ju = Timer(Duration(milliseconds: 100), () {
@@ -78,48 +81,46 @@ class _MultiSiteCombinationPageState extends State<MultiSiteCombinationPage> {
                 onRefresh: _handleRefresh,
                 showChildOpacityTransition: false,
                 child: ListView.builder(
-                  itemCount: allPostsFromAllSites.length,
+                  itemCount: allPostsHomeSite.length,
 
                   itemBuilder: (context, i) {
-                    return allPostsFromAllSites[i].videoCid.isEmpty
+                    return allPostsHomeSite[i].videoCid.isEmpty
                         ? MultiSiteMultipleEntryCard(
                             context,
-                            allPostsFromAllSites[i],
+                            allPostsHomeSite[i],
                             mes,
                             mDebugFlags,
-                            allPostsFromAllSites[i].flags.attachements
+                            allPostsHomeSite[i].flags.attachements
                                 ? sites.readImageProvider(
-                                    allPostsFromAllSites[i].siteUrl,
-                                    allPostsFromAllSites[i]
-                                        .attachmentLinkAsXXint,
-                                    allPostsFromAllSites[i].shortLink,
-                                    allPostsFromAllSites[i].ipfsCid,
-                                    allPostsFromAllSites[i].blurHash)
+                                    allPostsHomeSite[i].siteUrl,
+                                    allPostsHomeSite[i].attachmentLinkAsXXint,
+                                    allPostsHomeSite[i].shortLink,
+                                    allPostsHomeSite[i].ipfsCid,
+                                    allPostsHomeSite[i].blurHash)
                                 : null,
                             navi,
                             sites,
                             i,
-                            allPostsFromAllSites[i].siteUrl)
+                            allPostsHomeSite[i].siteUrl)
                         : MultiSiteMultipleEntryCard(
                             context,
-                            allPostsFromAllSites[i],
+                            allPostsHomeSite[i],
                             mes,
                             mDebugFlags,
-                            allPostsFromAllSites[i].flags.attachements
+                            allPostsHomeSite[i].flags.attachements
                                 ? sites.readMediaImageProvider(
-                                    allPostsFromAllSites[i].siteUrl,
-                                    allPostsFromAllSites[i]
-                                        .attachmentLinkAsXXint,
-                                    allPostsFromAllSites[i].shortLink,
-                                    allPostsFromAllSites[i].ipfsCid,
-                                    allPostsFromAllSites[i].blurHash,
-                                    allPostsFromAllSites[i].videoCid,
-                                    allPostsFromAllSites[i].audioCid)
+                                    allPostsHomeSite[i].siteUrl,
+                                    allPostsHomeSite[i].attachmentLinkAsXXint,
+                                    allPostsHomeSite[i].shortLink,
+                                    allPostsHomeSite[i].ipfsCid,
+                                    allPostsHomeSite[i].blurHash,
+                                    allPostsHomeSite[i].videoCid,
+                                    allPostsHomeSite[i].audioCid)
                                 : null,
                             navi,
                             sites,
                             i,
-                            allPostsFromAllSites[i].siteUrl);
+                            allPostsHomeSite[i].siteUrl);
                   },
                   //itemScrollController: itemScrollController,
                   //itemPositionsListener: itemPositionsListener,
