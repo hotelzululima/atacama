@@ -29,6 +29,43 @@ class SitesProvider with ChangeNotifier {
   });
   SitesProvider(this.source);
   dynamic get allSites => source.allSites;
+  Set<String> get followedSites {
+    return source.followedSites;
+  }
+
+  Set<String> get followedSitesWithDefault {
+    final fs = source.followedSites;
+    if (fs.isEmpty) return {'https://moderator.rocks'};
+    return fs;
+  }
+
+  String currentSite = 'https://moderator.rocks';
+  Future<bool> switchSite(
+      String name, String uri, String nick, String avatar) async {
+    if (name.isEmpty && uri.isEmpty) {
+      //assume we have a site we know of
+      uri = source.followedSites.first;
+    }
+    bool a = await source.switchSite(name, uri, nick, avatar);
+    if (a) {
+      currentSite = uri;
+      source.housekeep(); //save prefs
+      smoothNotifyListeners();
+    }
+    return a;
+  }
+
+  Future<bool> followSite(
+      String name, String uri, String nick, String avatar) async {
+    bool a = await source.followSite(name, uri, nick, avatar);
+    if (a) {
+      currentSite = uri;
+      source.housekeep(); //save prefs
+      smoothNotifyListeners();
+    }
+    return a;
+  }
+
   dynamic get homeSite => source.homeSite;
   /*void getData() async {
     http.Response response = await http.get(Constants.apiEndpoint);

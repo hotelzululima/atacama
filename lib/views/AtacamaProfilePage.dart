@@ -31,6 +31,43 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
     final ImagePicker _picker = ImagePicker();
     final avvy = avatarCarouselSlider(sites.avatar);
     String _avatar = sites.avatar;
+    String _nick = sites.nick;
+    String _selectedSite = '';
+    final acomu = Autocomplete<String>(
+      optionsBuilder: (TextEditingValue value) {
+        // When the field is empty
+        if (value.text.isEmpty) {
+          return [];
+        }
+        _selectedSite = value.text;
+        // The logic to find out which ones should appear
+        return sites.followedSitesWithDefault.where((suggestion) =>
+            suggestion.toLowerCase().contains(value.text.toLowerCase()));
+      },
+      onSelected: (value) async {
+        /*if (sites.followedSites.contains(value)) {
+          await sites
+              .switchSite(
+                  '', value, myTextEditingController.value.text, _avatar)
+              .then((v2) {
+            setState(() {});
+          });
+        } else { */
+        await sites
+            .followSite('', value, myTextEditingController.value.text, _avatar)
+            .then((v2) {
+          if (v2) {
+            sites.switchSite(
+                '', value, myTextEditingController.value.text, _avatar);
+          }
+          setState(() {});
+        });
+
+        /*setState(() {
+                _selectedAnimal = value;
+              });*/
+      },
+    );
     XFile? _pickedFile;
 
     return Scaffold(
@@ -62,7 +99,6 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
                 children: [
                   SizedBox(
                       height: size.height / 3.6,
-                      
                       child: CarouselSlider(
                         options: CarouselOptions(
                           height: 400.0,
@@ -99,6 +135,7 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
                       print('edco');
                     },
                   ),
+                  acomu,
                   TextButton(
                     style: ButtonStyle(
                       backgroundColor:
@@ -113,6 +150,30 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
                       if (_pickedFile != null) {
                         upfile = await _pickedFile.readAsBytes();
                       }
+
+                      await sites
+                          .followSite(
+                              '',
+                              _selectedSite.isEmpty
+                                  ? sites.currentSite
+                                  : _selectedSite,
+                              myTextEditingController.text,
+                              _avatar)
+                          .then((value) async {
+                        if (value)
+                          await sites.switchSite(
+                              '',
+                              _selectedSite.isEmpty
+                                  ? sites.currentSite
+                                  : _selectedSite,
+                              myTextEditingController.text,
+                              _avatar);
+                      });
+
+                      /*if (sites.homeSite == null) {
+                        await sites.switchSite(_selectedSite, '',
+                            myTextEditingController.text, _avatar);
+                      }*/
                       if (myTextEditingController.text.isNotEmpty) {
                         sites.setNickAvatar(
                             myTextEditingController.text, _avatar, '');

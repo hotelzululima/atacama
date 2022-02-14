@@ -34,7 +34,7 @@ void main() async {
   sites.switchSite('artfakk', 'https://artfakk.moderator.rocks');
  */
   //await sites.followSite('omasome', 'https://omasome.fi', 'test16', '🐼');
-  sites.switchSite('omasome', 'https://omasome.fi');
+  //sites.switchSite('omasome', 'https://omasome.fi');
   /*await sites.followSite(
       'omasome',
       'http://vembtyl4t6vf7c6uxgcskvmy4xy3565du2unjcbohzcru2vo4shfbjad.onion.pet/',
