@@ -97,10 +97,13 @@ class SitesProvider with ChangeNotifier {
     });
   }
 
-  String appSplashImage(String site) {
-    world? w = source.findSite(site);
-    if (w == null) return '';
-    return w.appSplashImage;
+  ImageProvider get siteSplashImage {
+    final h = source.homeSite?.LatestThreads.all.last;
+    if (h == null) {
+      return llaama;
+    }
+    return readImageProvider(source.homeSite!.siteName, h.attachmentLinkAsXXint,
+        h.shortLink, h.ipfsCid, h.blurHash);
   }
 
   String _currentThreadShortLink = '';
@@ -234,6 +237,8 @@ class SitesProvider with ChangeNotifier {
   Map<int, MemoryImage> _images = {};
   Map<String, dynamic> _bhaCache = {};
   AssetImage pieru = AssetImage('assets/fetchingImagePlaceholder.png');
+  AssetImage llaama = AssetImage('assets/atacamallama.jpg');
+
   ImageProvider readImageProvider(String site, int attachmentLinkAsXXint,
       String shortLink, String ipfsCid, String bHash) {
     if (_images[attachmentLinkAsXXint] != null) {
@@ -251,7 +256,8 @@ class SitesProvider with ChangeNotifier {
       final bim = BlurHash.decode(bHash).toImage(35, 20);
       final bia = Image.memory(Uint8List.fromList(img.encodeJpg(bim)));
       _bhaCache[bHash] = bia.image;
-      return _bhaCache[bHash];
+      smoothNotifyListeners();
+      //return _bhaCache[bHash];
     }
 
     return pieru;

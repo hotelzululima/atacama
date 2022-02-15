@@ -57,7 +57,6 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
             .followSite('', value, myTextEditingController.value.text, _avatar)
             .then((v2) {
           if (v2) {
-            
             sites.switchSite(
                 '', value, myTextEditingController.value.text, _avatar);
           }
@@ -98,11 +97,20 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
               ),
               child: ListView(
                 children: [
+                  Container(
+                      height: 260.0,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Ink.image(
+                          image: sites.siteSplashImage,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      )),
                   SizedBox(
-                      height: size.height / 3.6,
+                      height: 64.0,
                       child: CarouselSlider(
                         options: CarouselOptions(
-                          height: 400.0,
+                          height: 62.0,
                           onPageChanged: (index, reason) {
                             //set avatarus
                             _avatar = avatarAvailableList(sites.avatar)[index];
