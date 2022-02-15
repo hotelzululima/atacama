@@ -57,6 +57,7 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
             .followSite('', value, myTextEditingController.value.text, _avatar)
             .then((v2) {
           if (v2) {
+            
             sites.switchSite(
                 '', value, myTextEditingController.value.text, _avatar);
           }

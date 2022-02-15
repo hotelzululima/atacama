@@ -48,6 +48,13 @@ class SitesProvider with ChangeNotifier {
     }
     bool a = await source.switchSite(name, uri, nick, avatar);
     if (a) {
+      //REMOVE this hack
+      source.setIpfsCredentials(
+          '',
+          'e94a2eba4b88b6e1d7a0',
+          'e8f3357b3494fc48ac8b3baa8164a075e7bed86b675f06141e4ab0ceedf085ae',
+          '');
+
       currentSite = uri;
       source.housekeep(); //save prefs
       smoothNotifyListeners();

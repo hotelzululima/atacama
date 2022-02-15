@@ -40,8 +40,6 @@ void main() async {
       'http://vembtyl4t6vf7c6uxgcskvmy4xy3565du2unjcbohzcru2vo4shfbjad.onion.pet/',
       'ch17',
       '🐼');*/
-  sites.setIpfsCredentials('', 'e94a2eba4b88b6e1d7a0',
-      'e8f3357b3494fc48ac8b3baa8164a075e7bed86b675f06141e4ab0ceedf085ae', '');
 
   runApp(MultiProvider(
     providers: [
