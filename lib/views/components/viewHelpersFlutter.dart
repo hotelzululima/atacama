@@ -84,19 +84,23 @@ parseLinksToHtml(ModeratorEntry m, bool useIpfs) {
   return rem + '<p>' + pee + '</p>';
 }
 
-timeHelper(int timeElapsedSincePostMs) {
-  if (timeElapsedSincePostMs == 0) return 'lately';
+timeHelper(int perceivedTimestamp) {
+  final timeElapsedSincePostMs =
+      DateTime.now().millisecondsSinceEpoch - perceivedTimestamp;
+  if (timeElapsedSincePostMs < 0) return 'way back';
+  if (timeElapsedSincePostMs > 158400000) return 'way back';
   var t = (timeElapsedSincePostMs / 60000).round();
-  if (t < 2) return 'just now';
-  if (t < 20) return 'now';
+  if (t < 15) return 'now!';
+  //if (t < 30) return 'now';
   if (t < 60) return t.toString() + 'm ago';
-  if (t < 400) {
-    return 'lately';
-  }
+  if (t < 120) return 'last 1h';
+  if (t < 180) return 'last 2h';
+  if (t < 360) return 'last 4h';
+
   if (t < 24 * 60) return 'today';
   if (t < 48 * 60) return 'yesterday';
   //if (t < 7 * 24 * 60) return 'few days ago';
-  return 'previously';
+  return 'way back';
 }
 
 String tagHelper(List<String> tags) {
@@ -121,7 +125,8 @@ xarticleAuthorHelper(ModeratorEntry p, bool parseLinks, bool useIpfs,
   s += '<dt>' +
       linkButtonHelper('/tg/all', '@' + p.softNick + '🌱', p.softNick, '') +
       '</dt>';
-  String tl = timeHelper(p.timeElapsedSincePostMs);
+  //perceived is patched upon receive
+  String tl = timeHelper(p.perceivedTimestamp);
   s += tagHelper(p.tags);
   //s += '<dt>' + linkButtonHelper('/tg/all', tl, p.softNick, '') + '</dt>';
   s += '<dt>' +
@@ -395,7 +400,7 @@ ButtonBar articleAuthorHelper(
     });
   }
   s.add(TextButton(
-    child: Text(timeHelper(p.timeElapsedSincePostMs)),
+    child: Text(timeHelper(p.perceivedTimestamp)),
     //textColor: Colors.white,
     //color: Colors.green,
     onPressed: () {},

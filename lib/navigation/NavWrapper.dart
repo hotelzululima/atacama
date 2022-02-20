@@ -7,6 +7,7 @@ import '../actions/MessageActions.dart';
 import '../views/PostingKeyboardPage.dart';
 import '../views/ImagePickerPage.dart';
 import '../views/AtacamaProfilePage.dart';
+import '../views/ChonkyProfilePage.dart';
 
 class BottomNavigationBarProvider extends ChangeNotifier {
   // The index of the current tab
@@ -169,7 +170,9 @@ class NavWrapper extends StatelessWidget {
   final List<Widget> _tabs = [MultiSiteCombinationPage()];
   final Widget _postingKeyboard = PostingKeyboardPage();
   final Widget _imagePicker = ImagePickerPage();
-  final Widget _profilePage = AtacamaProfilePage();
+  final Widget _profilePage = ChonkyProfilePage();
+  //final Widget _profilePage = AtacamaProfilePage();
+
   final Widget _threadPage = MultiSiteThreadPage();
 
   @override

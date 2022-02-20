@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # keep last digit in sync with latest interzone
-version: 0.0.19
+version: 1.0.0
 
 environment:
   sdk: ">=2.14.2 <3.0.0"
@@ -28,7 +28,7 @@ dependencies:
   #flutter_svg: ^0.18.0
   http: ^0.13.4
   provider: ^5.0.0
-  #interzone: ^1.0.19
+  #interzone: ^1.0.20
   interzone:
     path: /Users/hoodownr/Documents/interzone
   hive: ^2.0.4
@@ -43,8 +43,13 @@ dependencies:
   blurhash_dart: ^1.1.0
   carousel_slider: ^4.0.0
   typed_messages: ^1.1.0
+  photo_view: ^0.13.0
   #video_player: ^2.2.18
   chewie: ^1.2.2
+  device_info: ^2.0.0
+  udp: ^5.0.1
+  peer_node_connection: ^1.0.0
+  #flutter_nearby_connections: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -62,6 +67,8 @@ flutter:
      - assets/fetchingImagePlaceholder.png
      - assets/moderatorSplash.jpeg
      - assets/atacamallama.jpg
+     - assets/chonkylogo.png
+     - assets/clubchonky.jpg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

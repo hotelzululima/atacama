@@ -12,25 +12,20 @@ ButtonBar MultiSiteReplyButtonBar(
     SitesProvider source) {
   return ButtonBar(
     children: [
-      /*TextButton(
-                child: const Text('CONTACT AGENT'),
-                onPressed: () {/* ... */},
-              ),*/
-      m.flags.isLiked
+      /*m.flags.isLiked
           ? TextButton(
               onPressed: () async {
                 await source.unlikeEntry(m.shortLink);
 
-                //navi.signal(AtacamaAction.viewThread, m.shortLink);
-              },
+               },
               child: Icon(Icons.thumb_up))
           : TextButton(
               onPressed: () async {
                 await source.LikeEntry(m.shortLink);
 
-                //navi.signal(AtacamaAction.viewThread, m.shortLink);
               },
               child: Icon(Icons.thumb_up_outlined)),
+      */
       TextButton(
           onPressed: () async {
             await source.DropEntry(m.shortLink);

@@ -25,21 +25,9 @@ void main() async {
   final interzoneDisk hid = interzoneDisk(db);
 
   final sites = ModeratorSites();
-  await sites.init(hid);
-  //await sites.followSite('chonky', 'https://chonky.rocks', 'torino', '🐼');
-  //sites.switchSite('chonky', 'https:/chonky.rocks');
-
-  /*await sites.followSite(
-      'artfakk', 'https://artfakk.moderator.rocks', 'torino', '🐼');
-  sites.switchSite('artfakk', 'https://artfakk.moderator.rocks');
- */
-  //await sites.followSite('omasome', 'https://omasome.fi', 'test16', '🐼');
-  //sites.switchSite('omasome', 'https://omasome.fi');
-  /*await sites.followSite(
-      'omasome',
-      'http://vembtyl4t6vf7c6uxgcskvmy4xy3565du2unjcbohzcru2vo4shfbjad.onion.pet/',
-      'ch17',
-      '🐼');*/
+  sites.init(hid).then((value) {
+    
+  });
 
   runApp(MultiProvider(
     providers: [

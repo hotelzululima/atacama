@@ -71,8 +71,9 @@ class _AtacamaProfilePageState extends State<AtacamaProfilePage> {
     XFile? _pickedFile;
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 233, 233, 233),
       body: Padding(
-        padding: const EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
+        padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
         child: Center(
           child: Theme(
             data: Theme.of(context).copyWith(

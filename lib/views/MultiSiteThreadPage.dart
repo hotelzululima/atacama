@@ -7,6 +7,7 @@ import '../Provider/SitesProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'MultiSiteSingleThreadCard.dart';
+import 'MultiSiteSingleThreadCardZoomable.dart';
 import 'ModeratorViewSettingsDefault.dart';
 import '../navigation/NavWrapper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -83,7 +84,7 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                       shrinkWrap: true,
                       itemCount: currentThread.length,
                       itemBuilder: (context, i) {
-                        return MultiSiteSingleThreadCard(
+                        return MultiSiteSingleThreadCardZoomable(
                             currentThread[i],
                             mes,
                             mDebugFlags,
@@ -152,6 +153,8 @@ class _MultiSiteThreadPageState extends State<MultiSiteThreadPage> {
                           child: TextFormField(
                             controller: myTextEditingController,
                             maxLength: 1000,
+                            maxLines: 5,
+                            minLines: 3,
                             focusNode: _focusNodeQuantity,
                             keyboardType: TextInputType.text,
 
