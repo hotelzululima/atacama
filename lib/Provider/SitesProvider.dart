@@ -133,6 +133,15 @@ class SitesProvider with ChangeNotifier {
 
           break;
         case 2:
+          return await source
+              .incomingCapsuleXXdata(message.data)
+              .then((value) async {
+            /*if (value.isNotEmpty) {
+              return PortMessage(message.port, 2, 0, value);
+            }*/
+            return PortMessage(0, 99, 0, Uint8List(0));
+          });
+        //satisfy xxs
         /*sites.injectXX(message.xx, message.data);
         //ask for more
         final Uint8List t = sites.xxWants;
@@ -173,7 +182,7 @@ class SitesProvider with ChangeNotifier {
     return fs;
   }
 
-  String currentSite = 'https://moderator.rocks';
+  String currentSite = 'https://omasome.rocks';
   Future<bool> switchSite(
       String name, String uri, String nick, String avatar) async {
     if (name.isEmpty && uri.isEmpty) {
@@ -318,6 +327,11 @@ class SitesProvider with ChangeNotifier {
     final t = source.refreshAllViaHTTP;
     //send pending items if we have some
     source.outgoingMessageCacheSend(0);
+
+    final su =
+        node.sendMessage(PortMessage(node.port, 1, 0, source.outgoingCapsule));
+    print(su);
+
     smoothNotifyListeners();
     return t;
   }
